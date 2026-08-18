@@ -78,3 +78,41 @@ export default function NewPostScreen({
     );
 }
 
+const styles = StyleSheet.create({
+container:{
+    flexGrow:1
+},
+
+title: {
+        
+    },
+
+    photoBox: {
+
+    },
+    photoBoxText: {
+
+    },
+    ImageContainer: {
+
+    },
+    preview: {
+
+    },
+    changePhotoButton: {
+
+    },
+    changePhotoText: {
+
+    },
+    gpsButton: {
+
+    },
+    textArea: {
+
+    },
+    cancelLink: {
+
+    },
+
+})
