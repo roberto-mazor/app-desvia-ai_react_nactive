@@ -48,3 +48,31 @@ Join our community of developers creating universal apps.
 
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+
+
+src/
+├── app/                        # [Router/View Entry] Ponto de entrada das rotas do Expo Router
+│   ├── _layout.tsx             # Configuração do layout global
+│   └── index.tsx               # Rota principal (Gerencia fluxo de exibição das telas)
+│
+├── controllers/                # [Controller] Regras de negócio, manipulação da câmera e geolocalização
+│   ├── AuthController.ts       # Validações de login e cadastro
+│   └── PostController.ts       # Lógica para fotos, GPS e criação de postagens
+│
+├── models/                     # [Model] Comunicação direta com o AsyncStorage
+│   ├── UserModel.ts            # Leitura e escrita de dados dos usuários
+│   └── PostModel.ts            # Leitura e escrita de dados das publicações
+│
+├── types/                      # Interfaces e Tipagens do TypeScript
+│   └── index.ts                # Definição dos tipos IUser, IPost, etc.
+│
+└── views/                      # [View] Interface do Usuário (UI)
+    ├── components/             # Componentes visuais reutilizáveis
+    │   ├── CustomButton.tsx    # Botão estilizado do app
+    │   └── CustomInput.tsx     # Campo de texto (TextInput) estilizado
+    │
+    └── screens/                # Interface das Telas sem regras de negócio profundas
+        ├── FeedScreen.tsx      # Exibição do feed de buracos
+        ├── LoginScreen.tsx     # Formulário de entrada
+        ├── NewPostScreen.tsx   # Formulário para tirar foto e enviar relato
+        └── RegisterScreen.tsx  # Formulário de cadastro de novo usuário
