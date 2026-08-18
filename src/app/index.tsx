@@ -1,83 +1,56 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Alert } from 'react-native';
 import LoginScreen from '../views/screens/LoginScreen';
 import RegisterScreen from '../views/screens/RegisterScreen';
-// import FeedScreen from '../views/screens/FeedScreen';
-// import NewPostScreen from '../views/screens/NewPostScreen'
+import FeedScreen from '../views/screens/FeedScreen';
+import NewPostScreen from '../views/screens/NewPostScreen';
+import { AuthController } from '../controllers/AuthController';
+import { PostController } from '../controllers/PostController';
+import { PostModel } from '../models/PostModel';
+import { IUser, IPost } from '../types';
 
 type ScreenType = 'login' | 'register' | 'feed' | 'new_post';
 
 export default function Index() {
-  // Altere a string abaixo ('login', 'register', 'feed', 'new_post') para testar qualquer tela diretamente
   const [screen, setScreen] = useState<ScreenType>('login');
+  const [currentUser, setCurrentUser] = useState<IUser | null>(null);
+  const [posts, setPosts] = useState<IPost[]>([]);
 
-  // Estados temporários para testar a digitação
+  // Form States
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  // Post States
+  const [photo, setPhoto] = useState<string | null>(null);
   const [location, setLocation] = useState('');
   const [details, setDetails] = useState('');
 
-  // Dados mocados para visualizar o Feed
-  const mockPosts = [
-    {
-      id: '1',
-      author: 'João Silva',
-      photo: 'https://via.placeholder.com/300',
-      location: 'Rua das Flores, 123',
-      details: 'Buraco fundo na faixa da direita.',
-      date: '17/08/2026',
-    },
-  ];
+  useEffect(() => {
+    PostModel.getPosts().then(setPosts);
+  }, []);
 
-  if (screen === 'login') {
-    return (
-      <LoginScreen
-        email={email}
-        setEmail={setEmail}
-        password={password}
-        setPassword={setPassword}
-        onLogin={() => setScreen('feed')}
-        onNavigateToRegister={() => setScreen('register')}
-      />
-    );
-  }
+  const handleLogin = async () => {
+    try {
+      const user = await AuthController.login(email, password);
+      setCurrentUser(user);
+      setScreen('feed');
+    } catch (err: any) {
+      Alert.alert('Erro', err.message);
+    }
+  };
 
-  if (screen === 'register') {
-    return (
-      <RegisterScreen
-        name={name}
-        setName={setName}
-        email={email}
-        setEmail={setEmail}
-        password={password}
-        setPassword={setPassword}
-        onRegister={() => setScreen('login')}
-        onNavigateToLogin={() => setScreen('login')}
-      />
-    );
-  }
+  const handleRegister = async () => {
+    try {
+      const user = await AuthController.login(name, email, password);
+      setCurrentUser(user);
+      setScreen('feed');
+    } catch (err: any) {
+      Alert.alert('Erro', err.message);
+    }
+  };
 
-  if (screen === 'new_post') {
-    return (
-      <NewPostScreen
-        photo={null}
-        location={location}
-        setLocation={setLocation}
-        details={details}
-        setDetails={setDetails}
-        onTakePhoto={() => alert('Simulação: Câmera acionada!')}
-        onGetLocation={() => setLocation('Lat: -22.73, Long: -47.33')}
-        onCreatePost={() => setScreen('feed')}
-        onCancel={() => setScreen('feed')}
-      />
-    );
-  }
 
-  return (
-    <FeedScreen
-      posts={mockPosts}
-      onNavigateToNewPost={() => setScreen('new_post')}
-      onLogout={() => setScreen('login')}
-    />
-  );
+
 }
+

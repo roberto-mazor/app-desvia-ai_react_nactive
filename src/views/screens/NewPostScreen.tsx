@@ -80,7 +80,9 @@ export default function NewPostScreen({
 
 const styles = StyleSheet.create({
 container:{
-    flexGrow:1
+    flexGrow:1,
+    backgroundColor: '#f5f5f5',
+    alignItems: 'center',
 },
 
 title: {
