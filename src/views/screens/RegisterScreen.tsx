@@ -7,11 +7,11 @@ interface RegisterScreenProps {
     name: string;
     setName: (value: string) => void;
     email: string;
-    setEmail: (Value: string) => void;
+    setEmail: (value: string) => void;
     password: string;
-    setPassword: (value: string) =) void;
+    setPassword: (value: string) => void;
     onRegister: () => void;
-    onNavigtateToLogin: () => void;
+    onNavigateToLogin: () => void;
 }
 
 export default function RegisterScreen({
@@ -22,17 +22,59 @@ export default function RegisterScreen({
     password,
     setPassword,
     onRegister,
-    onNavigtateToLogin
+    onNavigateToLogin,
 }: RegisterScreenProps) {
     return (
-        <View style={StyleSheet.container}>
-            <Text style={StyleSheet.title}>Criar Conta</Text>
+        <View style={styles.container}>
+            <Text style={styles.title}>Criar Conta</Text>
 
-            <CustomImput
+            <CustomInput
                 placeholder="Nome Completo"
                 value={name}
                 onChangeText={setName}
             />
+
+            <CustomInput
+                placeholder="E-mail"
+                value={email}
+                onChangeText={setEmail}
+                autoCapitalize="none"
+                keyboardType="email-address"
+            />
+
+            <CustomInput
+                placeholder="Senha"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+            />
+
+            <CustomButton title="Salvar Cadastro" onPress={onRegister} />
+
+            <TouchableOpacity onPress={onNavigateToLogin}>
+                <Text style={styles.link}>Voltar ao Login</Text>
+            </TouchableOpacity>
         </View>
-    )
+    );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#f5f5f5',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 20,
+    },
+    title: {
+        fontSize: 26,
+        fontWeight: 'bold',
+        marginBottom: 20,
+        color: '#333',
+    },
+    link: {
+        color: '#2e64e5',
+        marginTop: 15,
+        fontWeight: '600',
+    },
+});
