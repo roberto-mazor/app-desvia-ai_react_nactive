@@ -12,7 +12,10 @@ export const AuthController = {
     register: async (name: string, email: string, password: string): Promise<IUser> => {
         if (!name || !email || !password) throw new Error('Preencha todos os campos.');
         const newUser: IUser = { name, email, password};
+        const emailExists = users.some(u => u.email.toLowerCase() === email.toLowerCase());
         await UserModel.saveUser(newUser);
         return newUser;
     }
 }
+
+
