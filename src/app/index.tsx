@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Alert } from 'react-native';
-import LoginScreen from '../views/screens/LoginScreen';
-import RegisterScreen from '../views/screens/RegisterScreen';
-import FeedScreen from '../views/screens/FeedScreen';
-import NewPostScreen from '../views/screens/NewPostScreen';
-import { AuthController } from '../controllers/AuthController';
-import { PostController } from '../controllers/PostController';
-import { PostModel } from '../models/PostModel';
-import { IUser, IPost } from '../types';
+import LoginScreen from '@/views/screens/LoginScreen';
+import RegisterScreen from '@/views/screens/RegisterScreen';
+import FeedScreen from '@/views/screens/FeedScreen';
+import NewPostScreen from '@/views/screens/NewPostScreen';
+import { AuthController } from '@/controllers/AuthController';
+import { PostController } from '@/controllers/PostController';
+import { PostModel } from '@/models/PostModel';
+import { IUser, IPost } from '@/types';
 
 type ScreenType = 'login' | 'register' | 'feed' | 'new_post';
 
