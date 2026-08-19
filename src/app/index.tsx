@@ -26,7 +26,7 @@ export default function Index() {
   const [location, setLocation] = useState('');
   const [details, setDetails] = useState('');
 
-  // Carregar posts salvos no AsyncStorage ao iniciar
+  // Carregar posts salvos ao iniciar
   useEffect(() => {
     PostModel.getPosts().then(setPosts);
   }, []);
@@ -50,7 +50,6 @@ export default function Index() {
     }
   };
 
-
   const handleRegister = async () => {
     try {
       await AuthController.register(name, email, password);
@@ -68,6 +67,15 @@ export default function Index() {
       if (photoUri) setPhoto(photoUri);
     } catch (err: any) {
       Alert.alert('Câmera', err.message);
+    }
+  };
+
+  const handlePickGallery = async () => {
+    try {
+      const photoUri = await PostController.pickImageFromGallery();
+      if (photoUri) setPhoto(photoUri);
+    } catch (err: any) {
+      Alert.alert('Galeria', err.message);
     }
   };
 
@@ -103,12 +111,11 @@ export default function Index() {
 
   const handleLogout = () => {
     setCurrentUser(null);
-    setEmail('');
-    setPassword('');
+    clearAuthFields();
     setScreen('login');
   };
-  
-  // Rederiza a tela na condição
+
+  // --- RENDERIZAÇÃO CONDICIONAL DAS TELAS ---
   if (screen === 'login') {
     return (
       <LoginScreen
@@ -146,6 +153,7 @@ export default function Index() {
         details={details}
         setDetails={setDetails}
         onTakePhoto={handleTakePhoto}
+        onPickGallery={handlePickGallery}
         onGetLocation={handleGetLocation}
         onCreatePost={handleCreatePost}
         onCancel={() => {

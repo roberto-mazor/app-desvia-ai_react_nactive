@@ -12,20 +12,18 @@ interface ICreatePostInput {
 }
 
 export const PostController = {
+    // Tirar foto com a Câmera e salvar na galeria
     takePhoto: async (): Promise<string | null> => {
-        // 1. Permissão da Câmera
         const cameraPermission = await ImagePicker.requestCameraPermissionsAsync();
         if (cameraPermission.status !== 'granted') {
             throw new Error('Permissão de acesso à câmera negada.');
         }
 
-        // 2. Permissão da Galeria especificando SOMENTE ESCRITA (evita pedir áudio)
         const mediaPermission = await MediaLibrary.requestPermissionsAsync(true);
         if (mediaPermission.status !== 'granted') {
             throw new Error('Permissão para salvar na galeria negada.');
         }
 
-        // 3. Captura a imagem
         const result = await ImagePicker.launchCameraAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             quality: 0.7,
@@ -37,11 +35,29 @@ export const PostController = {
         }
 
         const photoUri = result.assets[0].uri;
-
-        // 4. Salva a imagem tirada no álbum/galeria
         await MediaLibrary.saveToLibraryAsync(photoUri);
 
         return photoUri;
+    },
+
+    // Selecionar imagem já existente da Galeria de Fotos
+    pickImageFromGallery: async (): Promise<string | null> => {
+        const mediaPermission = await MediaLibrary.requestPermissionsAsync(true);
+        if (mediaPermission.status !== 'granted') {
+            throw new Error('Permissão para acessar as fotos da galeria negada.');
+        }
+
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            quality: 0.7,
+            allowsEditing: true,
+        });
+
+        if (result.canceled || !result.assets[0].uri) {
+            return null;
+        }
+
+        return result.assets[0].uri;
     },
 
     getLocation: async (): Promise<string> => {

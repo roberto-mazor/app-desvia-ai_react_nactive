@@ -10,6 +10,7 @@ interface NewPostScreenProps {
     details: string;
     setDetails: (value: string) => void;
     onTakePhoto: () => void;
+    onPickGallery: () => void;
     onGetLocation: () => void;
     onCreatePost: () => void;
     onCancel: () => void;
@@ -22,6 +23,7 @@ export default function NewPostScreen({
     details,
     setDetails,
     onTakePhoto,
+    onPickGallery,
     onGetLocation,
     onCreatePost,
     onCancel,
@@ -30,35 +32,44 @@ export default function NewPostScreen({
         <ScrollView contentContainerStyle={styles.container}>
             <Text style={styles.title}>Registrar Buraco 🕳️</Text>
 
-            {/* Preview da Foto ou Botão para Abrir a Câmera */}
+            {/* Preview da foto selecionada ou Opções de Seleção */}
             {photo ? (
                 <View style={styles.imageContainer}>
                     <Image source={{ uri: photo }} style={styles.preview} />
-                    <TouchableOpacity style={styles.changePhotoButton} onPress={onTakePhoto}>
-                        <Text style={styles.changePhotoText}>Tirar Outra Foto</Text>
-                    </TouchableOpacity>
+                    <View style={styles.changeButtonsRow}>
+                        <TouchableOpacity style={styles.changeButton} onPress={onTakePhoto}>
+                            <Text style={styles.changeText}>📸 Nova Foto</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.changeButton} onPress={onPickGallery}>
+                            <Text style={styles.changeText}>🖼️ Escolher da Galeria</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             ) : (
-                <TouchableOpacity style={styles.photoBox} onPress={onTakePhoto}>
-                    <Text style={styles.photoBoxText}>📸 Tirar Foto do Buraco</Text>
-                </TouchableOpacity>
+                <View style={styles.photoBoxContainer}>
+                    <TouchableOpacity style={styles.photoOptionButton} onPress={onTakePhoto}>
+                        <Text style={styles.photoOptionText}>📸 Tirar Foto</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={[styles.photoOptionButton, styles.galleryOptionButton]} onPress={onPickGallery}>
+                        <Text style={styles.photoOptionText}>🖼️ Galeria de Fotos</Text>
+                    </TouchableOpacity>
+                </View>
             )}
 
-            {/* Botão de Localização Automática (GPS) */}
+            {/* Pegar localização GPS */}
             <CustomButton
                 title="📍 Pegar Localização Atual (GPS)"
                 onPress={onGetLocation}
                 style={styles.gpsButton}
             />
 
-            {/* Campo de Texto para Ajustar ou Digitar a Localização */}
             <CustomInput
                 placeholder="Ou digite o endereço (Rua, Bairro...)"
                 value={location}
                 onChangeText={setLocation}
             />
 
-            {/* Campo de Texto para Detalhes / Descrição */}
             <CustomInput
                 placeholder="Detalhes (Ex: Buraco profundo na faixa da direita)"
                 value={details}
@@ -67,7 +78,6 @@ export default function NewPostScreen({
                 style={styles.textArea}
             />
 
-            {/* Ações de Publicação */}
             <CustomButton title="Publicar Registro" onPress={onCreatePost} />
 
             <TouchableOpacity onPress={onCancel}>
@@ -91,9 +101,15 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         color: '#333',
     },
-    photoBox: {
+    photoBoxContainer: {
         width: '100%',
-        height: 180,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 15,
+    },
+    photoOptionButton: {
+        flex: 1,
+        height: 120,
         backgroundColor: '#e1e1e1',
         borderRadius: 8,
         borderWidth: 2,
@@ -101,12 +117,19 @@ const styles = StyleSheet.create({
         borderStyle: 'dashed',
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 15,
+        marginRight: 5,
     },
-    photoBoxText: {
-        fontSize: 16,
-        color: '#555',
+    galleryOptionButton: {
+        marginRight: 0,
+        marginLeft: 5,
+        backgroundColor: '#e8f0fe',
+        borderColor: '#2e64e5',
+    },
+    photoOptionText: {
+        fontSize: 14,
+        color: '#333',
         fontWeight: '600',
+        textAlign: 'center',
     },
     imageContainer: {
         width: '100%',
@@ -118,15 +141,21 @@ const styles = StyleSheet.create({
         height: 200,
         borderRadius: 8,
     },
-    changePhotoButton: {
-        marginTop: 8,
+    changeButtonsRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        width: '100%',
+        marginTop: 10,
     },
-    changePhotoText: {
+    changeButton: {
+        padding: 8,
+    },
+    changeText: {
         color: '#2e64e5',
         fontWeight: '600',
     },
     gpsButton: {
-        backgroundColor: '#4b5563', // Cinza escuro para diferenciar do botão principal
+        backgroundColor: '#4b5563',
         marginBottom: 10,
     },
     textArea: {
