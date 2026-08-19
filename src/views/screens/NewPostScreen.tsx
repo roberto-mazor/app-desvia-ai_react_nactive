@@ -1,4 +1,3 @@
-TypeScript
 import React from 'react';
 import { ScrollView, View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import CustomInput from '../components/CustomInput';
@@ -79,42 +78,64 @@ export default function NewPostScreen({
 }
 
 const styles = StyleSheet.create({
-container:{
-    flexGrow:1,
-    backgroundColor: '#f5f5f5',
-    alignItems: 'center',
-},
-
-title: {
-        
+    container: {
+        flexGrow: 1,
+        backgroundColor: '#f5f5f5',
+        alignItems: 'center',
+        padding: 20,
+        paddingTop: 50,
     },
-
+    title: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 20,
+        color: '#333',
+    },
     photoBox: {
-
+        width: '100%',
+        height: 180,
+        backgroundColor: '#e1e1e1',
+        borderRadius: 8,
+        borderWidth: 2,
+        borderColor: '#ccc',
+        borderStyle: 'dashed',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 15,
     },
     photoBoxText: {
-
+        fontSize: 16,
+        color: '#555',
+        fontWeight: '600',
     },
-    ImageContainer: {
-
+    imageContainer: {
+        width: '100%',
+        marginBottom: 15,
+        alignItems: 'center',
     },
     preview: {
-
+        width: '100%',
+        height: 200,
+        borderRadius: 8,
     },
     changePhotoButton: {
-
+        marginTop: 8,
     },
     changePhotoText: {
-
+        color: '#2e64e5',
+        fontWeight: '600',
     },
     gpsButton: {
-
+        backgroundColor: '#4b5563', // Cinza escuro para diferenciar do botão principal
+        marginBottom: 10,
     },
     textArea: {
-
+        height: 80,
+        textAlignVertical: 'top',
     },
     cancelLink: {
-
+        color: '#d9534f',
+        marginTop: 10,
+        fontWeight: '600',
     },
-
-})
+});
