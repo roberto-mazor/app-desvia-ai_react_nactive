@@ -38,6 +38,27 @@
             "backgroundColor": "#000000"
           }
         }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "O app precisa de acesso às suas fotos para você selecionar a imagem do buraco.",
+          "cameraPermission": "O app precisa de acesso à câmera para você tirar fotos do buraco."
+        }
+      ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "O app precisa de permissão para salvar a foto tirada na sua galeria.",
+          "saveTemplate": "%y%m%d_%H%M%S",
+          "isAccessMediaLocationEnabled": true
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "O app precisa da sua localização para mapear onde está o buraco."
+        }
       ]
     ],
     "experiments": {
