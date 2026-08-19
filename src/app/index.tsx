@@ -50,6 +50,7 @@ export default function Index() {
     }
   };
 
+
   const handleRegister = async () => {
     try {
       await AuthController.register(name, email, password);
@@ -102,10 +103,11 @@ export default function Index() {
 
   const handleLogout = () => {
     setCurrentUser(null);
-    clearAuthFields();
+    setEmail('');
+    setPassword('');
     setScreen('login');
   };
-
+  
   // Rederiza a tela na condição
   if (screen === 'login') {
     return (

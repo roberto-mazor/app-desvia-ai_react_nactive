@@ -16,21 +16,20 @@ export default function FeedScreen({
 }: FeedScreenProps) {
     return (
         <View style={styles.container}>
-            {/* Cabeçalho da Tela */}
+            {/* Cabeçalho com Botão de Sair/Logout */}
             <View style={styles.header}>
                 <Text style={styles.title}>Desvia aí 🕳️</Text>
-                <TouchableOpacity onPress={onLogout}>
-                    <Text style={styles.logoutText}>Sair</Text>
+
+                <TouchableOpacity style={styles.logoutButton} onPress={onLogout}>
+                    <Text style={styles.logoutText}>🚪 Sair</Text>
                 </TouchableOpacity>
             </View>
 
-            {/* Botão Principal de Ação */}
             <CustomButton
                 title="+ Registrar Novo Buraco"
                 onPress={onNavigateToNewPost}
             />
 
-            {/* Listagem das Publicações */}
             <FlatList
                 data={posts}
                 keyExtractor={(item) => item.id}
@@ -39,7 +38,6 @@ export default function FeedScreen({
                 ListEmptyComponent={
                     <View style={styles.emptyContainer}>
                         <Text style={styles.emptyText}>Nenhum buraco registrado ainda.</Text>
-                        <Text style={styles.emptySubtext}>Seja o primeiro a alertar a comunidade!</Text>
                     </View>
                 }
                 renderItem={({ item }) => (
@@ -48,13 +46,9 @@ export default function FeedScreen({
                             <Text style={styles.author}>👤 {item.author}</Text>
                             <Text style={styles.date}>{item.date}</Text>
                         </View>
-
                         <Image source={{ uri: item.photo }} style={styles.cardImage} />
-
-                        <View style={styles.cardContent}>
-                            <Text style={styles.location}>📍 {item.location}</Text>
-                            <Text style={styles.details}>{item.details}</Text>
-                        </View>
+                        <Text style={styles.location}>📍 {item.location}</Text>
+                        <Text style={styles.details}>{item.details}</Text>
                     </View>
                 )}
             />
@@ -80,10 +74,18 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#333',
     },
+    logoutButton: {
+        backgroundColor: '#ffebee',
+        paddingVertical: 6,
+        paddingHorizontal: 12,
+        borderRadius: 6,
+        borderWidth: 1,
+        borderColor: '#ffcdd2',
+    },
     logoutText: {
-        color: '#d9534f',
+        color: '#d32f2f',
         fontWeight: 'bold',
-        fontSize: 16,
+        fontSize: 14,
     },
     list: {
         width: '100%',
@@ -91,27 +93,20 @@ const styles = StyleSheet.create({
     },
     card: {
         backgroundColor: '#fff',
-        borderRadius: 10,
+        borderRadius: 8,
         padding: 12,
         marginBottom: 15,
         borderWidth: 1,
-        borderColor: '#e0e0e0',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 2,
-        elevation: 2,
+        borderColor: '#eee',
     },
     cardHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems: 'center',
         marginBottom: 8,
     },
     author: {
         fontWeight: 'bold',
         color: '#333',
-        fontSize: 15,
     },
     date: {
         color: '#888',
@@ -119,37 +114,23 @@ const styles = StyleSheet.create({
     },
     cardImage: {
         width: '100%',
-        height: 200,
+        height: 180,
         borderRadius: 8,
-        marginVertical: 4,
-        backgroundColor: '#eee',
-    },
-    cardContent: {
-        marginTop: 8,
+        marginVertical: 6,
     },
     location: {
         fontWeight: '600',
         color: '#2e64e5',
-        marginBottom: 4,
     },
     details: {
         color: '#444',
-        fontSize: 14,
-        lineHeight: 20,
+        marginTop: 4,
     },
     emptyContainer: {
         alignItems: 'center',
-        justifyContent: 'center',
-        paddingVertical: 40,
+        paddingVertical: 30,
     },
     emptyText: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#666',
-    },
-    emptySubtext: {
-        fontSize: 14,
-        color: '#999',
-        marginTop: 4,
+        color: '#888',
     },
 });
