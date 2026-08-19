@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { Alert } from 'react-native';
-import LoginScreen from '@/views/screens/LoginScreen';
-import RegisterScreen from '@/views/screens/RegisterScreen';
-import FeedScreen from '@/views/screens/FeedScreen';
-import NewPostScreen from '@/views/screens/NewPostScreen';
 import { AuthController } from '@/controllers/AuthController';
 import { PostController } from '@/controllers/PostController';
 import { PostModel } from '@/models/PostModel';
-import { IUser, IPost } from '@/types';
+import { IPost, IUser } from '@/types';
+import FeedScreen from '@/views/screens/FeedScreen';
+import LoginScreen from '@/views/screens/LoginScreen';
+import NewPostScreen from '@/views/screens/NewPostScreen';
+import RegisterScreen from '@/views/screens/RegisterScreen';
+import React, { useEffect, useState } from 'react';
+import { Alert } from 'react-native';
 
 type ScreenType = 'login' | 'register' | 'feed' | 'new_post';
 
@@ -16,70 +16,151 @@ export default function Index() {
   const [currentUser, setCurrentUser] = useState<IUser | null>(null);
   const [posts, setPosts] = useState<IPost[]>([]);
 
-  // Form States
+  // Estados de Formulário
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  // Post States
+  // Estados da Publicação
   const [photo, setPhoto] = useState<string | null>(null);
   const [location, setLocation] = useState('');
   const [details, setDetails] = useState('');
 
+  // Carregar posts salvos no AsyncStorage ao iniciar
   useEffect(() => {
     PostModel.getPosts().then(setPosts);
   }, []);
 
+  // Limpar formulário de autenticação
+  const clearAuthFields = () => {
+    setName('');
+    setEmail('');
+    setPassword('');
+  };
+
+  // --- HANDLERS ---
   const handleLogin = async () => {
     try {
       const user = await AuthController.login(email, password);
       setCurrentUser(user);
+      clearAuthFields();
       setScreen('feed');
     } catch (err: any) {
-      Alert.alert('Erro', err.message);
+      Alert.alert('Erro no Login', err.message);
     }
   };
 
   const handleRegister = async () => {
     try {
       await AuthController.register(name, email, password);
-      Alert.alert('Sucesso', 'Cadastrado com sucesso!');
+      Alert.alert('Sucesso', 'Cadastro realizado com sucesso!');
+      clearAuthFields();
       setScreen('login');
     } catch (err: any) {
-      Alert.alert('Erro', err.message);
+      Alert.alert('Erro no Cadastro', err.message);
+    }
+  };
+
+  const handleTakePhoto = async () => {
+    try {
+      const photoUri = await PostController.takePhoto();
+      if (photoUri) setPhoto(photoUri);
+    } catch (err: any) {
+      Alert.alert('Câmera', err.message);
+    }
+  };
+
+  const handleGetLocation = async () => {
+    try {
+      const loc = await PostController.getLocation();
+      setLocation(loc);
+    } catch (err: any) {
+      Alert.alert('Localização', err.message);
     }
   };
 
   const handleCreatePost = async () => {
     if (!currentUser) return;
     try {
-      const updated = await PostController.createPost(photo, location, details, currentUser.name);
+      const updated = await PostController.createPost({
+        photo,
+        location,
+        details,
+        author: currentUser.name,
+      });
       setPosts(updated);
-      setPhoto(null); setLocation(''); setDetails('');
+
+      // Limpar campos após publicar
+      setPhoto(null);
+      setLocation('');
+      setDetails('');
       setScreen('feed');
     } catch (err: any) {
-      Alert.alert('Erro', err.message);
+      Alert.alert('Erro ao Publicar', err.message);
     }
   };
 
+  const handleLogout = () => {
+    setCurrentUser(null);
+    clearAuthFields();
+    setScreen('login');
+  };
+
+  // Rederiza a tela na condição
   if (screen === 'login') {
-    return <LoginScreen email={email} setEmail={setEmail} password={password} setPassword={setPassword} onLogin={handleLogin} onRegister={() => setScreen('register')} />;
+    return (
+      <LoginScreen
+        email={email}
+        setEmail={setEmail}
+        password={password}
+        setPassword={setPassword}
+        onLogin={handleLogin}
+        onNavigateToRegister={() => setScreen('register')}
+      />
+    );
   }
 
   if (screen === 'register') {
-    return <RegisterScreen name={name} setName={setName} email={email} setEmail={setEmail} password={password} setPassword={setPassword} onRegister={handleRegister} onLogin={() => setScreen('login')} />;
+    return (
+      <RegisterScreen
+        name={name}
+        setName={setName}
+        email={email}
+        setEmail={setEmail}
+        password={password}
+        setPassword={setPassword}
+        onRegister={handleRegister}
+        onNavigateToLogin={() => setScreen('login')}
+      />
+    );
   }
 
   if (screen === 'new_post') {
     return (
       <NewPostScreen
-        photo={photo} location={location} setLocation={setLocation} details={details} setDetails={setDetails}
-        onTakePhoto={async () => setPhoto(await PostController.takePhoto())}
-        onGetLocation={async () => setLocation(await PostController.getLocation())}
-        onCreatePost={handleCreatePost} onCancel={() => setScreen('feed')}
+        photo={photo}
+        location={location}
+        setLocation={setLocation}
+        details={details}
+        setDetails={setDetails}
+        onTakePhoto={handleTakePhoto}
+        onGetLocation={handleGetLocation}
+        onCreatePost={handleCreatePost}
+        onCancel={() => {
+          setPhoto(null);
+          setLocation('');
+          setDetails('');
+          setScreen('feed');
+        }}
       />
     );
   }
 
-  return <FeedScreen posts={posts} onNewPost={() => setScreen('new_post')} onLogout={() => { setCurrentUser(null); setScreen('login'); }} />;
+  return (
+    <FeedScreen
+      posts={posts}
+      onNavigateToNewPost={() => setScreen('new_post')}
+      onLogout={handleLogout}
+    />
+  );
 }
