@@ -42,15 +42,44 @@ export default function Index() {
 
   const handleRegister = async () => {
     try {
-      const user = await AuthController.login(name, email, password);
-      setCurrentUser(user);
+      await AuthController.register(name, email, password);
+      Alert.alert('Sucesso', 'Cadastrado com sucesso!');
+      setScreen('login');
+    } catch (err: any) {
+      Alert.alert('Erro', err.message);
+    }
+  };
+
+  const handleCreatePost = async () => {
+    if (!currentUser) return;
+    try {
+      const updated = await PostController.createPost(photo, location, details, currentUser.name);
+      setPosts(updated);
+      setPhoto(null); setLocation(''); setDetails('');
       setScreen('feed');
     } catch (err: any) {
       Alert.alert('Erro', err.message);
     }
   };
 
+  if (screen === 'login') {
+    return <LoginScreen email={email} setEmail={setEmail} password={password} setPassword={setPassword} onLogin={handleLogin} onRegister={() => setScreen('register')} />;
+  }
 
+  if (screen === 'register') {
+    return <RegisterScreen name={name} setName={setName} email={email} setEmail={setEmail} password={password} setPassword={setPassword} onRegister={handleRegister} onLogin={() => setScreen('login')} />;
+  }
 
+  if (screen === 'new_post') {
+    return (
+      <NewPostScreen
+        photo={photo} location={location} setLocation={setLocation} details={details} setDetails={setDetails}
+        onTakePhoto={async () => setPhoto(await PostController.takePhoto())}
+        onGetLocation={async () => setLocation(await PostController.getLocation())}
+        onCreatePost={handleCreatePost} onCancel={() => setScreen('feed')}
+      />
+    );
+  }
+
+  return <FeedScreen posts={posts} onNewPost={() => setScreen('new_post')} onLogout={() => { setCurrentUser(null); setScreen('login'); }} />;
 }
-
