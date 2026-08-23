@@ -1,28 +1,65 @@
-import React from 'react'
-import { TouchableOpacity, Text, StyleSheet, StyleProp, ViewStyle } from 'react-native'
+import React from 'react';
+import { StyleSheet, Text, TouchableOpacity, TouchableOpacityProps } from 'react-native';
 
-interface Props {
+// Declaração da interface CustomButtonProps
+interface CustomButtonProps extends TouchableOpacityProps {
     title: string;
     onPress: () => void;
-    style?: StyleProp<ViewStyle>;
+    variant?: 'primary' | 'secondary' | 'google';
 }
 
-export default function CustomButton({ title, onPress, style }: CustomButtonProps) {
+export const CustomButton: React.FC<CustomButtonProps> = ({
+    title,
+    onPress,
+    variant = 'primary',
+    ...rest
+}) => {
     return (
-        <TouchableOpacity style={[styles.button, style]} onPress={onPress}>
-            <Text style={styles.buttonText}>{title}</Text>
+        <TouchableOpacity
+            style={[
+                styles.button,
+                variant === 'secondary' && styles.secondaryButton,
+                variant === 'google' && styles.googleButton,
+            ]}
+            onPress={onPress}
+            {...rest}
+        >
+            <Text
+                style={[
+                    styles.text,
+                    variant === 'secondary' && styles.secondaryText,
+                    variant === 'google' && styles.googleText,
+                ]}
+            >
+                {title}
+            </Text>
         </TouchableOpacity>
     );
-}
+};
 
 const styles = StyleSheet.create({
     button: {
-        width: '100%',
-        backgroundColor: '#2e64e5',
-        padding: 15,
+        backgroundColor: '#007AFF',
+        padding: 14,
         borderRadius: 8,
         alignItems: 'center',
-        marginBottom: 10
+        marginVertical: 6,
     },
-    buttonText: { color: '#fff', fontWeight: 'bold' }
+    secondaryButton: {
+        backgroundColor: '#6C757D',
+    },
+    googleButton: {
+        backgroundColor: '#4285F4',
+    },
+    text: {
+        color: '#FFF',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    secondaryText: {
+        color: '#FFF',
+    },
+    googleText: {
+        color: '#FFF',
+    },
 });

@@ -1,14 +1,15 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import CustomInput from '@/views/components/CustomInput';
-import CustomButton from '@/views/components/CustomButton';
+import { CustomButton } from '@/views/components/CustomButton';
 
 interface LoginScreenProps {
     email: string;
-    setEmail: (value: string) => void;
+    setEmail: (val: string) => void;
     password: string;
-    setPassword: (value: string) => void;
+    setPassword: (val: string) => void;
     onLogin: () => void;
+    onGoogleLogin: () => void; // <--- NOVA PROP
     onNavigateToRegister: () => void;
 }
 
@@ -18,17 +19,17 @@ export default function LoginScreen({
     password,
     setPassword,
     onLogin,
+    onGoogleLogin,
     onNavigateToRegister,
 }: LoginScreenProps) {
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Desvia aí 🕳️</Text>
+            <Text style={styles.title}>DesviaAí 🕳️</Text>
 
             <CustomInput
                 placeholder="E-mail"
                 value={email}
                 onChangeText={setEmail}
-                autoCapitalize="none"
                 keyboardType="email-address"
             />
 
@@ -41,8 +42,13 @@ export default function LoginScreen({
 
             <CustomButton title="Entrar" onPress={onLogin} />
 
+            {/* Botão de Login com Google */}
+            <TouchableOpacity style={styles.googleButton} onPress={onGoogleLogin}>
+                <Text style={styles.googleButtonText}>🌐 Entrar com Google</Text>
+            </TouchableOpacity>
+
             <TouchableOpacity onPress={onNavigateToRegister}>
-                <Text style={styles.link}>Criar Conta</Text>
+                <Text style={styles.link}>Não tem uma conta? Cadastre-se</Text>
             </TouchableOpacity>
         </View>
     );
@@ -51,20 +57,35 @@ export default function LoginScreen({
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f5f5f5',
-        alignItems: 'center',
         justifyContent: 'center',
         padding: 20,
+        backgroundColor: '#f5f5f5',
     },
     title: {
         fontSize: 28,
         fontWeight: 'bold',
-        marginBottom: 20,
+        textAlign: 'center',
+        marginBottom: 30,
         color: '#333',
     },
+    googleButton: {
+        backgroundColor: '#ffffff',
+        borderColor: '#4285F4',
+        borderWidth: 1.5,
+        padding: 12,
+        borderRadius: 8,
+        alignItems: 'center',
+        marginTop: 10,
+        marginBottom: 15,
+    },
+    googleButtonText: {
+        color: '#4285F4',
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
     link: {
+        textAlign: 'center',
         color: '#2e64e5',
-        marginTop: 15,
-        fontWeight: '600',
+        marginTop: 10,
     },
 });

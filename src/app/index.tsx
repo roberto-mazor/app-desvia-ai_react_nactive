@@ -6,9 +6,14 @@ import FeedScreen from '@/views/screens/FeedScreen';
 import LoginScreen from '@/views/screens/LoginScreen';
 import NewPostScreen from '@/views/screens/NewPostScreen';
 import RegisterScreen from '@/views/screens/RegisterScreen';
+import * as Google from 'expo-auth-session/providers/google';
 import * as Location from 'expo-location';
+import * as WebBrowser from 'expo-web-browser';
 import React, { useEffect, useState } from 'react';
 import { Alert } from 'react-native';
+import { makeRedirectUri } from 'expo-auth-session';
+
+WebBrowser.maybeCompleteAuthSession();
 
 type ScreenType = 'login' | 'register' | 'feed' | 'new_post';
 
@@ -29,6 +34,39 @@ export default function Index() {
 
   // Estado para guardar a localização 
   const [coords, setCoords] = useState<Location.LocationObjectCoords | null>(null);
+
+  // Para resolver e conseguir logar no Expo Go sem erros de URI
+  const redirectUri = makeRedirectUri({
+    native: 'https://auth.expo.io/@seu-usuario-expo/app-desvia-ai', // Substitua pelo seu usuário Expo se souber, ou deixe apenas a chamada padrão
+  });
+
+  // Hook do Google Auth
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    webClientId: '686875648999-g2uhig4aj23lq8simkfe8l4r1b6a1pip.apps.googleusercontent.com',
+    androidClientId: '686875648999-g2uhig4aj23lq8simkfe8l4r1b6a1pip.apps.googleusercontent.com',
+  });
+
+  // Listener para capturar o retorno do Google
+  useEffect(() => {
+    if (response?.type === 'success' && response.authentication?.accessToken) {
+      fetchGoogleUserInfo(response.authentication.accessToken);
+    }
+  }, [response]);
+
+  const fetchGoogleUserInfo = async (token: string) => {
+    try {
+      const res = await fetch('https://www.googleapis.com/userinfo/v2/me', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const userInfo = await res.json();
+      const user = AuthController.formatGoogleUser(userInfo);
+      setCurrentUser(user);
+      clearAuthFields();
+      setScreen('feed');
+    } catch (err: any) {
+      Alert.alert('Erro Google', err.message);
+    }
+  };
 
   // Carregar posts salvos ao iniciar
   useEffect(() => {
@@ -86,8 +124,8 @@ export default function Index() {
   const handleGetLocation = async () => {
     try {
       const locResult = await PostController.getLocation();
-      setLocation(locResult.formattedAddress); // Preenche o Input com o Endereço Reverso
-      setCoords(locResult.coords);              // Guarda as coordenadas para o MapView
+      setLocation(locResult.formattedAddress);
+      setCoords(locResult.coords);
     } catch (err: any) {
       Alert.alert('Localização', err.message);
     }
@@ -104,7 +142,6 @@ export default function Index() {
       });
       setPosts(updated);
 
-      // Limpar campos após publicar
       setPhoto(null);
       setLocation('');
       setCoords(null);
@@ -121,6 +158,10 @@ export default function Index() {
     setScreen('login');
   };
 
+  const handleGoogleLogin = () => {
+    promptAsync();
+  };
+
   // --- RENDERIZAÇÃO CONDICIONAL DAS TELAS ---
   if (screen === 'login') {
     return (
@@ -130,6 +171,7 @@ export default function Index() {
         password={password}
         setPassword={setPassword}
         onLogin={handleLogin}
+        onGoogleLogin={handleGoogleLogin}
         onNavigateToRegister={() => setScreen('register')}
       />
     );

@@ -11,7 +11,6 @@ export const UserModel = {
             if (!data) return [];
 
             const parsed = JSON.parse(data);
-            // Obs: ocorreu um erro ao tentar registrar, o erro "Propriedade "users" não foi encontrada"
             // Garante que o retorno seja um Array, mesmo que o storage esteja corrompido
             return Array.isArray(parsed) ? parsed : [];
         } catch (error) {

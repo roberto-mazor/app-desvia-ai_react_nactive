@@ -1,5 +1,8 @@
+import * as WebBrowser from 'expo-web-browser';
 import { UserModel } from '../models/UserModel';
 import { IUser } from '../types';
+
+WebBrowser.maybeCompleteAuthSession();
 
 export const AuthController = {
     login: async (email: string, password: string): Promise<IUser> => {
@@ -8,9 +11,9 @@ export const AuthController = {
         }
 
         const users = await UserModel.getUsers();
-
-        // Procura o usuário no array retornado
-        const user = users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === password);
+        const user = users.find(
+            u => u.email.toLowerCase() === email.toLowerCase() && u.password === password
+        );
 
         if (!user) {
             throw new Error('E-mail ou senha incorretos.');
@@ -25,9 +28,8 @@ export const AuthController = {
         }
 
         const users = await UserModel.getUsers();
-
-        // Verifica se o e-mail já foi cadastrado
         const userExists = users.some(u => u.email.toLowerCase() === email.toLowerCase());
+
         if (userExists) {
             throw new Error('Este e-mail já está cadastrado.');
         }
@@ -40,5 +42,14 @@ export const AuthController = {
 
         await UserModel.saveUser(newUser);
         return newUser;
-    }
+    },
+
+    // Formata os dados recebidos da API do Google via expo-auth-session
+    formatGoogleUser: (userInfo: any): IUser => {
+        return {
+            id: userInfo.id,
+            name: userInfo.name || 'Usuário Google',
+            email: userInfo.email,
+        };
+    },
 };

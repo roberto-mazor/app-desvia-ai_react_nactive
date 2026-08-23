@@ -3,7 +3,7 @@ import { ScrollView, View, Text, Image, TouchableOpacity, StyleSheet } from 'rea
 import MapView, { Marker } from 'react-native-maps';
 import { LocationObjectCoords } from 'expo-location';
 import CustomInput from '../components/CustomInput';
-import CustomButton from '../components/CustomButton';
+import { CustomButton } from '@/views/components/CustomButton';
 
 interface NewPostScreenProps {
     photo: string | null;
