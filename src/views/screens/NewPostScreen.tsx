@@ -1,5 +1,7 @@
 import React from 'react';
 import { ScrollView, View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
+import { LocationObjectCoords } from 'expo-location';
 import CustomInput from '../components/CustomInput';
 import CustomButton from '../components/CustomButton';
 
@@ -7,6 +9,7 @@ interface NewPostScreenProps {
     photo: string | null;
     location: string;
     setLocation: (value: string) => void;
+    coords: LocationObjectCoords | null;
     details: string;
     setDetails: (value: string) => void;
     onTakePhoto: () => void;
@@ -20,6 +23,7 @@ export default function NewPostScreen({
     photo,
     location,
     setLocation,
+    coords,
     details,
     setDetails,
     onTakePhoto,
@@ -32,7 +36,7 @@ export default function NewPostScreen({
         <ScrollView contentContainerStyle={styles.container}>
             <Text style={styles.title}>Registrar Buraco 🕳️</Text>
 
-            {/* Preview da foto selecionada ou Opções de Seleção */}
+            {/* Preview de Foto */}
             {photo ? (
                 <View style={styles.imageContainer}>
                     <Image source={{ uri: photo }} style={styles.preview} />
@@ -50,19 +54,41 @@ export default function NewPostScreen({
                     <TouchableOpacity style={styles.photoOptionButton} onPress={onTakePhoto}>
                         <Text style={styles.photoOptionText}>📸 Tirar Foto</Text>
                     </TouchableOpacity>
-
                     <TouchableOpacity style={[styles.photoOptionButton, styles.galleryOptionButton]} onPress={onPickGallery}>
                         <Text style={styles.photoOptionText}>🖼️ Galeria de Fotos</Text>
                     </TouchableOpacity>
                 </View>
             )}
 
-            {/* Pegar localização GPS */}
+            {/* Botão de GPS */}
             <CustomButton
                 title="📍 Pegar Localização Atual (GPS)"
                 onPress={onGetLocation}
                 style={styles.gpsButton}
             />
+
+            {/* Exibição do Mapa */}
+            {coords && (
+                <View style={styles.mapContainer}>
+                    <MapView
+                        style={styles.map}
+                        initialRegion={{
+                            latitude: coords.latitude,
+                            longitude: coords.longitude,
+                            latitudeDelta: 0.005,
+                            longitudeDelta: 0.005,
+                        }}
+                    >
+                        <Marker
+                            coordinate={{
+                                latitude: coords.latitude,
+                                longitude: coords.longitude,
+                            }}
+                            title="Local do Buraco"
+                        />
+                    </MapView>
+                </View>
+            )}
 
             <CustomInput
                 placeholder="Ou digite o endereço (Rua, Bairro...)"
@@ -147,16 +173,22 @@ const styles = StyleSheet.create({
         width: '100%',
         marginTop: 10,
     },
-    changeButton: {
-        padding: 8,
-    },
-    changeText: {
-        color: '#2e64e5',
-        fontWeight: '600',
-    },
+    changeButton: { padding: 8 },
+    changeText: { color: '#2e64e5', fontWeight: '600' },
     gpsButton: {
         backgroundColor: '#4b5563',
         marginBottom: 10,
+    },
+    mapContainer: {
+        width: '100%',
+        height: 200, 
+        borderRadius: 8,
+        overflow: 'hidden',
+        marginVertical: 10,
+    },
+    map: {
+        width: '100%',
+        height: '100%',
     },
     textArea: {
         height: 80,

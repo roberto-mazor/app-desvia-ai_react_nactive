@@ -6,6 +6,7 @@ import FeedScreen from '@/views/screens/FeedScreen';
 import LoginScreen from '@/views/screens/LoginScreen';
 import NewPostScreen from '@/views/screens/NewPostScreen';
 import RegisterScreen from '@/views/screens/RegisterScreen';
+import * as Location from 'expo-location';
 import React, { useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 
@@ -25,6 +26,9 @@ export default function Index() {
   const [photo, setPhoto] = useState<string | null>(null);
   const [location, setLocation] = useState('');
   const [details, setDetails] = useState('');
+
+  // Estado para guardar a localização 
+  const [coords, setCoords] = useState<Location.LocationObjectCoords | null>(null);
 
   // Carregar posts salvos ao iniciar
   useEffect(() => {
@@ -81,8 +85,9 @@ export default function Index() {
 
   const handleGetLocation = async () => {
     try {
-      const loc = await PostController.getLocation();
-      setLocation(loc);
+      const locResult = await PostController.getLocation();
+      setLocation(locResult.formattedAddress); // Preenche o Input com o Endereço Reverso
+      setCoords(locResult.coords);              // Guarda as coordenadas para o MapView
     } catch (err: any) {
       Alert.alert('Localização', err.message);
     }
@@ -102,6 +107,7 @@ export default function Index() {
       // Limpar campos após publicar
       setPhoto(null);
       setLocation('');
+      setCoords(null);
       setDetails('');
       setScreen('feed');
     } catch (err: any) {
@@ -150,6 +156,7 @@ export default function Index() {
         photo={photo}
         location={location}
         setLocation={setLocation}
+        coords={coords}
         details={details}
         setDetails={setDetails}
         onTakePhoto={handleTakePhoto}
@@ -159,6 +166,7 @@ export default function Index() {
         onCancel={() => {
           setPhoto(null);
           setLocation('');
+          setCoords(null);
           setDetails('');
           setScreen('feed');
         }}

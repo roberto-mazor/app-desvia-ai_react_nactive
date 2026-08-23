@@ -12,7 +12,6 @@ interface ICreatePostInput {
 }
 
 export const PostController = {
-    // Tirar foto com a Câmera e salvar na galeria
     takePhoto: async (): Promise<string | null> => {
         const cameraPermission = await ImagePicker.requestCameraPermissionsAsync();
         if (cameraPermission.status !== 'granted') {
@@ -40,11 +39,10 @@ export const PostController = {
         return photoUri;
     },
 
-    // Selecionar imagem já existente da Galeria de Fotos
     pickImageFromGallery: async (): Promise<string | null> => {
         const mediaPermission = await MediaLibrary.requestPermissionsAsync(true);
         if (mediaPermission.status !== 'granted') {
-            throw new Error('Permissão para acessar as fotos da galeria negada.');
+            throw new Error('Permissão para acessar a galeria negada.');
         }
 
         const result = await ImagePicker.launchImageLibraryAsync({
@@ -60,14 +58,38 @@ export const PostController = {
         return result.assets[0].uri;
     },
 
-    getLocation: async (): Promise<string> => {
+    // Retorna o Endereço Formatado + Objeto de Coordenadas
+    getLocation: async (): Promise<{ formattedAddress: string; coords: Location.LocationObjectCoords }> => {
         const { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
             throw new Error('Permissão de localização negada.');
         }
 
         const loc = await Location.getCurrentPositionAsync({});
-        return `Lat: ${loc.coords.latitude.toFixed(4)}, Long: ${loc.coords.longitude.toFixed(4)}`;
+
+        // Geolocalização Reversa para obter o nome da rua/bairro
+        const addressResponse = await Location.reverseGeocodeAsync({
+            latitude: loc.coords.latitude,
+            longitude: loc.coords.longitude,
+        });
+
+        let addressString = `Lat: ${loc.coords.latitude.toFixed(4)}, Long: ${loc.coords.longitude.toFixed(4)}`;
+
+        if (addressResponse.length > 0) {
+            const addr = addressResponse[0];
+            const street = addr.street || addr.name || '';
+            const district = addr.district || addr.subregion || '';
+            const city = addr.city || '';
+
+            if (street || district) {
+                addressString = [street, district, city].filter(Boolean).join(', ');
+            }
+        }
+
+        return {
+            formattedAddress: addressString,
+            coords: loc.coords,
+        };
     },
 
     createPost: async ({ photo, location, details, author }: ICreatePostInput): Promise<IPost[]> => {
