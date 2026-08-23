@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import CustomButton from '../components/CustomButton';
+import { CustomButton } from '../components/CustomButton';
 import { IPost } from '../../types';
 
 interface FeedScreenProps {

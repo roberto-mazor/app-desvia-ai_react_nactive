@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { ScrollView, View, Text, Image, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { LocationObjectCoords } from 'expo-location';
 import CustomInput from '../components/CustomInput';
@@ -61,11 +61,13 @@ export default function NewPostScreen({
             )}
 
             {/* Botão de GPS */}
-            <CustomButton
-                title="📍 Pegar Localização Atual (GPS)"
-                onPress={onGetLocation}
-                style={styles.gpsButton}
-            />
+            <View style={styles.fullWidthButton}>
+                <CustomButton
+                    title="📍 Pegar Localização Atual (GPS)"
+                    onPress={onGetLocation}
+                    variant="secondary"
+                />
+            </View>
 
             {/* Exibição do Mapa */}
             {coords && (
@@ -96,13 +98,18 @@ export default function NewPostScreen({
                 onChangeText={setLocation}
             />
 
-            <CustomInput
-                placeholder="Detalhes (Ex: Buraco profundo na faixa da direita)"
-                value={details}
-                onChangeText={setDetails}
-                multiline
-                style={styles.textArea}
-            />
+            {/* Campo de Detalhes Estilizado Diretamente */}
+            <View style={styles.textAreaContainer}>
+                <TextInput
+                    placeholder="Detalhes (Ex: Buraco profundo na faixa da direita)"
+                    placeholderTextColor="#888"
+                    value={details}
+                    onChangeText={setDetails}
+                    multiline
+                    numberOfLines={3}
+                    style={styles.textArea}
+                />
+            </View>
 
             <CustomButton title="Publicar Registro" onPress={onCreatePost} />
 
@@ -179,9 +186,13 @@ const styles = StyleSheet.create({
         backgroundColor: '#4b5563',
         marginBottom: 10,
     },
+    fullWidthButton: {
+        width: '100%',
+        marginVertical: 10,
+    },
     mapContainer: {
         width: '100%',
-        height: 200, 
+        height: 200,
         borderRadius: 8,
         overflow: 'hidden',
         marginVertical: 10,
@@ -190,9 +201,21 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
     },
+    textAreaContainer: {
+        width: '100%',
+        backgroundColor: '#FFFFFF',
+        borderWidth: 1,
+        borderColor: '#E0E0E0',
+        borderRadius: 8,
+        marginVertical: 10,
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+    },
     textArea: {
-        height: 80,
+        minHeight: 80,
         textAlignVertical: 'top',
+        fontSize: 14,
+        color: '#333333',
     },
     cancelLink: {
         color: '#d9534f',
