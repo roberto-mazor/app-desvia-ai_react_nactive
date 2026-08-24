@@ -42,8 +42,8 @@ export default function Index() {
 
   // Hook do Google Auth
   const [request, response, promptAsync] = Google.useAuthRequest({
-    webClientId: '686875648999-g2uhig4aj23lq8simkfe8l4r1b6a1pip.apps.googleusercontent.com',
-    androidClientId: '686875648999-g2uhig4aj23lq8simkfe8l4r1b6a1pip.apps.googleusercontent.com',
+    webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
   });
 
   // Listener para capturar o retorno do Google
