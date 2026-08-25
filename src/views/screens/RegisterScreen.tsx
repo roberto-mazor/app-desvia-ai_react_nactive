@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import CustomInput from '../components/CustomInput';
-import CustomButton from '../components/CustomButton';
+import CustomInput from '@/views/components/CustomInput'
+import { CustomButton } from '@/views/components/CustomButton';
 
 interface RegisterScreenProps {
     name: string;

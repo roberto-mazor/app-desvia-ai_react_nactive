@@ -9,7 +9,7 @@ interface LoginScreenProps {
     password: string;
     setPassword: (val: string) => void;
     onLogin: () => void;
-    onGoogleLogin: () => void; // <--- NOVA PROP
+    onGoogleLogin: () => void;
     onNavigateToRegister: () => void;
 }
 
