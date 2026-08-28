@@ -1,6 +1,6 @@
 import React from 'react';
 import { ScrollView, View, Text, Image, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker, PROVIDER_DEFAULT, UrlTile } from 'react-native-maps';
 import { LocationObjectCoords } from 'expo-location';
 import CustomInput from '../components/CustomInput';
 import { CustomButton } from '@/views/components/CustomButton';
@@ -36,7 +36,7 @@ export default function NewPostScreen({
         <ScrollView contentContainerStyle={styles.container}>
             <Text style={styles.title}>Registrar Buraco 🕳️</Text>
 
-            {/* Preview de Foto */}
+            {/* Opções de Foto */}
             {photo ? (
                 <View style={styles.imageContainer}>
                     <Image source={{ uri: photo }} style={styles.preview} />
@@ -60,7 +60,7 @@ export default function NewPostScreen({
                 </View>
             )}
 
-            {/* Botão de GPS */}
+            {/* Botão de Buscar GPS */}
             <View style={styles.fullWidthButton}>
                 <CustomButton
                     title="📍 Pegar Localização Atual (GPS)"
@@ -69,11 +69,12 @@ export default function NewPostScreen({
                 />
             </View>
 
-            {/* Exibição do Mapa */}
+            {/* Exibição do MapView */}
             {coords && (
                 <View style={styles.mapContainer}>
                     <MapView
                         style={styles.map}
+                        mapType="none" // Remove a camada nativa do Google
                         initialRegion={{
                             latitude: coords.latitude,
                             longitude: coords.longitude,
@@ -81,6 +82,12 @@ export default function NewPostScreen({
                             longitudeDelta: 0.005,
                         }}
                     >
+                        <UrlTile
+                            urlTemplate="https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                            maximumZ={19}
+                            flipY={false}
+                        />
+
                         <Marker
                             coordinate={{
                                 latitude: coords.latitude,
@@ -98,7 +105,6 @@ export default function NewPostScreen({
                 onChangeText={setLocation}
             />
 
-            {/* Campo de Detalhes Estilizado Diretamente */}
             <View style={styles.textAreaContainer}>
                 <TextInput
                     placeholder="Detalhes (Ex: Buraco profundo na faixa da direita)"
@@ -182,10 +188,6 @@ const styles = StyleSheet.create({
     },
     changeButton: { padding: 8 },
     changeText: { color: '#2e64e5', fontWeight: '600' },
-    gpsButton: {
-        backgroundColor: '#4b5563',
-        marginBottom: 10,
-    },
     fullWidthButton: {
         width: '100%',
         marginVertical: 10,
