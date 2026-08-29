@@ -1,57 +1,80 @@
 import React from 'react';
-import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import { CustomButton } from '../components/CustomButton';
+import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { IPost } from '../../types';
 
 interface FeedScreenProps {
     posts: IPost[];
-    onNavigateToNewPost: () => void;
+    onNewPost: () => void;
     onLogout: () => void;
+    onSelectPost: (post: IPost) => void; // <-- Nova prop
 }
 
-export default function FeedScreen({
-    posts,
-    onNavigateToNewPost,
-    onLogout,
-}: FeedScreenProps) {
-    return (
-        <View style={styles.container}>
-            {/* Cabeçalho com Botão de Sair/Logout */}
-            <View style={styles.header}>
-                <Text style={styles.title}>Desvia aí 🕳️</Text>
+export default function FeedScreen({ posts, onNewPost, onLogout, onSelectPost }: FeedScreenProps) {
+    const insets = useSafeAreaInsets();
 
-                <TouchableOpacity style={styles.logoutButton} onPress={onLogout}>
-                    <Text style={styles.logoutText}>🚪 Sair</Text>
+    const renderItem = ({ item }: { item: IPost }) => (
+        <TouchableOpacity
+            style={styles.card}
+            activeOpacity={0.8}
+            onPress={() => onSelectPost(item)} // <-- Abre os detalhes ao clicar
+        >
+            <Image source={{ uri: item.photo }} style={styles.cardImage} />
+            <View style={styles.cardContent}>
+                <Text style={styles.cardLocation} numberOfLines={1}>
+                    📍 {item.location}
+                </Text>
+                <Text style={styles.cardDetails} numberOfLines={2}>
+                    {item.details}
+                </Text>
+                <View style={styles.cardFooter}>
+                    <Text style={styles.cardAuthor}>Por: {item.author}</Text>
+                    <Text style={styles.cardDate}>{item.date}</Text>
+                </View>
+                <Text style={styles.viewMoreText}>Toque para ver detalhes e mapa →</Text>
+            </View>
+        </TouchableOpacity>
+    );
+
+    return (
+        <View
+            style={[
+                styles.container,
+                {
+                    paddingTop: Math.max(insets.top, 20),
+                    paddingBottom: Math.max(insets.bottom, 10),
+                },
+            ]}
+        >
+            {/* Header */}
+            <View style={styles.header}>
+                <Text style={styles.headerTitle}>Desvia Aí 🕳️</Text>
+                <TouchableOpacity onPress={onLogout} style={styles.logoutButton}>
+                    <Text style={styles.logoutText}>Sair</Text>
                 </TouchableOpacity>
             </View>
 
-            <CustomButton
-                title="+ Registrar Novo Buraco"
-                onPress={onNavigateToNewPost}
-            />
-
+            {/* Lista de Registros */}
             <FlatList
                 data={posts}
                 keyExtractor={(item) => item.id}
-                style={styles.list}
-                showsVerticalScrollIndicator={false}
+                renderItem={renderItem}
+                contentContainerStyle={styles.listContainer}
                 ListEmptyComponent={
                     <View style={styles.emptyContainer}>
                         <Text style={styles.emptyText}>Nenhum buraco registrado ainda.</Text>
+                        <Text style={styles.emptySubtext}>Seja o primeiro a reportar!</Text>
                     </View>
                 }
-                renderItem={({ item }) => (
-                    <View style={styles.card}>
-                        <View style={styles.cardHeader}>
-                            <Text style={styles.author}>👤 {item.author}</Text>
-                            <Text style={styles.date}>{item.date}</Text>
-                        </View>
-                        <Image source={{ uri: item.photo }} style={styles.cardImage} />
-                        <Text style={styles.location}>📍 {item.location}</Text>
-                        <Text style={styles.details}>{item.details}</Text>
-                    </View>
-                )}
             />
+
+            {/* Botão Flutuante de Novo Post */}
+            <TouchableOpacity
+                style={[styles.fab, { bottom: Math.max(insets.bottom + 20, 25) }]}
+                onPress={onNewPost}
+            >
+                <Text style={styles.fabText}>+ Reportar</Text>
+            </TouchableOpacity>
         </View>
     );
 }
@@ -59,78 +82,108 @@ export default function FeedScreen({
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f5f5f5',
-        paddingHorizontal: 20,
-        paddingTop: 50,
+        backgroundColor: '#121212',
     },
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 15,
+        paddingHorizontal: 20,
+        paddingBottom: 15,
+        borderBottomWidth: 1,
+        borderBottomColor: '#222',
     },
-    title: {
-        fontSize: 24,
+    headerTitle: {
+        fontSize: 22,
         fontWeight: 'bold',
-        color: '#333',
-    },
-    logoutButton: {
-        backgroundColor: '#ffebee',
-        paddingVertical: 6,
-        paddingHorizontal: 12,
-        borderRadius: 6,
-        borderWidth: 1,
-        borderColor: '#ffcdd2',
+        color: '#FFF',
     },
     logoutText: {
-        color: '#d32f2f',
-        fontWeight: 'bold',
-        fontSize: 14,
+        color: '#FF6B6B',
+        fontWeight: '600',
     },
-    list: {
-        width: '100%',
-        marginTop: 10,
+    listContainer: {
+        padding: 16,
+        paddingBottom: 90,
     },
     card: {
-        backgroundColor: '#fff',
-        borderRadius: 8,
-        padding: 12,
-        marginBottom: 15,
+        backgroundColor: '#1E1E1E',
+        borderRadius: 12,
+        marginBottom: 16,
+        overflow: 'hidden',
         borderWidth: 1,
-        borderColor: '#eee',
-    },
-    cardHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 8,
-    },
-    author: {
-        fontWeight: 'bold',
-        color: '#333',
-    },
-    date: {
-        color: '#888',
-        fontSize: 12,
+        borderColor: '#2C2C2C',
     },
     cardImage: {
         width: '100%',
         height: 180,
-        borderRadius: 8,
-        marginVertical: 6,
     },
-    location: {
+    cardContent: {
+        padding: 14,
+    },
+    cardLocation: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#FFF',
+        marginBottom: 6,
+    },
+    cardDetails: {
+        fontSize: 14,
+        color: '#BBB',
+        marginBottom: 10,
+    },
+    cardFooter: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        borderTopWidth: 1,
+        borderTopColor: '#2A2A2A',
+        paddingTop: 8,
+    },
+    cardAuthor: {
+        fontSize: 12,
+        color: '#777',
+    },
+    cardDate: {
+        fontSize: 12,
+        color: '#777',
+    },
+    viewMoreText: {
+        fontSize: 12,
+        color: '#4DA6FF',
+        marginTop: 8,
         fontWeight: '600',
-        color: '#2e64e5',
-    },
-    details: {
-        color: '#444',
-        marginTop: 4,
     },
     emptyContainer: {
         alignItems: 'center',
-        paddingVertical: 30,
+        justifyContent: 'center',
+        paddingVertical: 80,
     },
     emptyText: {
         color: '#888',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    emptySubtext: {
+        color: '#555',
+        fontSize: 14,
+        marginTop: 4,
+    },
+    fab: {
+        position: 'absolute',
+        right: 20,
+        backgroundColor: '#0066FF',
+        paddingVertical: 14,
+        paddingHorizontal: 22,
+        borderRadius: 30,
+        elevation: 5,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
+    },
+    fabText: {
+        color: '#FFF',
+        fontWeight: 'bold',
+        fontSize: 16,
     },
 });

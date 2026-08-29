@@ -1,3 +1,5 @@
+import { LocationObjectCoords } from 'expo-location';
+
 export interface IUser {
     id?: string;
     name: string;
@@ -12,4 +14,5 @@ export interface IPost {
     location: string;
     details: string;
     date: string;
+    coords?: LocationObjectCoords | null;
 }
