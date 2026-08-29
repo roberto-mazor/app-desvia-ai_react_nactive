@@ -125,7 +125,7 @@ export const PostController = {
         }
 
         const newPost: IPost = {
-            id: Date.now().toString(),
+            id: Date.now().toString(), // Garante um ID único baseado no timestamp atual
             author,
             photo,
             location,
@@ -134,7 +134,9 @@ export const PostController = {
             date: new Date().toLocaleDateString('pt-BR'),
         };
 
-        return await PostModel.savePost(newPost);
+        // Salva e retorna a lista completa com todos os posts
+        const updatedPosts = await PostModel.savePost(newPost);
+        return updatedPosts;
     },
 
     getPosts: async (): Promise<IPost[]> => {
