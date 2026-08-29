@@ -1,3 +1,4 @@
+import { Colors } from '@/Colors';
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import CustomInput from '@/views/components/CustomInput'
@@ -61,7 +62,7 @@ export default function RegisterScreen({
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f5f5f5',
+        backgroundColor: Colors.background,
         alignItems: 'center',
         justifyContent: 'center',
         padding: 20,

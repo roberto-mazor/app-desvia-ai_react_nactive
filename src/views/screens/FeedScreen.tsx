@@ -1,4 +1,5 @@
 import React from 'react';
+import { Colors } from '@/Colors';
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { IPost } from '../../types';
@@ -7,7 +8,7 @@ interface FeedScreenProps {
     posts: IPost[];
     onNewPost: () => void;
     onLogout: () => void;
-    onSelectPost: (post: IPost) => void; // <-- Nova prop
+    onSelectPost: (post: IPost) => void;
 }
 
 export default function FeedScreen({ posts, onNewPost, onLogout, onSelectPost }: FeedScreenProps) {
@@ -17,7 +18,7 @@ export default function FeedScreen({ posts, onNewPost, onLogout, onSelectPost }:
         <TouchableOpacity
             style={styles.card}
             activeOpacity={0.8}
-            onPress={() => onSelectPost(item)} // <-- Abre os detalhes ao clicar
+            onPress={() => onSelectPost(item)} 
         >
             <Image source={{ uri: item.photo }} style={styles.cardImage} />
             <View style={styles.cardContent}>
@@ -82,7 +83,7 @@ export default function FeedScreen({ posts, onNewPost, onLogout, onSelectPost }:
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#121212',
+        backgroundColor: Colors.background,
     },
     header: {
         flexDirection: 'row',
@@ -98,7 +99,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#FFF',
     },
-    logoutButton: {          // <-- Adicione este bloco
+    logoutButton: {
         paddingVertical: 6,
         paddingHorizontal: 12,
         borderRadius: 6,
@@ -113,7 +114,7 @@ const styles = StyleSheet.create({
         paddingBottom: 90,
     },
     card: {
-        backgroundColor: '#1E1E1E',
+        backgroundColor: Colors.background,
         borderRadius: 12,
         marginBottom: 16,
         overflow: 'hidden',
@@ -165,7 +166,7 @@ const styles = StyleSheet.create({
         paddingVertical: 80,
     },
     emptyText: {
-        color: '#888',
+        color: '#a7a7a7',
         fontSize: 16,
         fontWeight: 'bold',
     },

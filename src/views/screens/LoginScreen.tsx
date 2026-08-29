@@ -1,5 +1,6 @@
 import { CustomButton } from '@/views/components/CustomButton';
 import CustomInput from '@/views/components/CustomInput';
+import { Colors } from '@/Colors';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -67,7 +68,7 @@ export default function LoginScreen({
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#121212',
+        backgroundColor: Colors.background,
         paddingHorizontal: 25,
         justifyContent: 'center',
     },

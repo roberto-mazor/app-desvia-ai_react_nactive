@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
         marginVertical: 6,
     },
     secondaryButton: {
-        backgroundColor: '#6C757D',
+        backgroundColor: '#296d38',
     },
     googleButton: {
         backgroundColor: '#4285F4',

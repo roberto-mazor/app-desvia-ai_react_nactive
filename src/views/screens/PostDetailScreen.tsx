@@ -1,3 +1,4 @@
+import { Colors } from '@/Colors';
 import React from 'react';
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
@@ -66,7 +67,7 @@ export default function PostDetailScreen({ post, onBack }: PostDetailScreenProps
 const styles = StyleSheet.create({
     container: {
         flexGrow: 1,
-        backgroundColor: '#1E1E1E',
+        backgroundColor: Colors.background,
         paddingHorizontal: 20,
     },
     backButton: {

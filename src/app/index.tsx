@@ -1,3 +1,4 @@
+import { Colors } from '@/Colors';
 import { AuthController } from '@/controllers/AuthController';
 import { PostController } from '@/controllers/PostController';
 import { IPost, IUser } from '@/types';
@@ -9,6 +10,7 @@ import RegisterScreen from '@/views/screens/RegisterScreen';
 import { LocationObjectCoords } from 'expo-location';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, StyleSheet, View } from 'react-native';
+import { Stack } from 'expo-router';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<string>('login');
@@ -146,6 +148,9 @@ export default function App() {
 
   return (
     <View style={styles.container}>
+      {/* Adicione esta linha aqui para desativar o header com o texto "index" */}
+      <Stack.Screen options={{ headerShown: false }} />
+
       {currentScreen === 'login' && (
         <LoginScreen
           email={loginEmail}
@@ -207,6 +212,7 @@ export default function App() {
           }}
         />
       )}
+
     </View>
   );
 }
@@ -214,12 +220,12 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#121212',
+    backgroundColor: Colors.background,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#121212',
+    backgroundColor: Colors.background,
   },
 });

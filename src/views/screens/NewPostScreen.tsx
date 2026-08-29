@@ -1,3 +1,4 @@
+import { Colors } from '@/Colors';
 import { CustomButton } from '@/views/components/CustomButton';
 import { LocationObjectCoords } from 'expo-location';
 import React from 'react';
@@ -137,7 +138,7 @@ export default function NewPostScreen({
 const styles = StyleSheet.create({
     container: {
         flexGrow: 1,
-        backgroundColor: '#1E1E1E',
+        backgroundColor: Colors.background,
         alignItems: 'center',
         paddingHorizontal: 20,
     },
