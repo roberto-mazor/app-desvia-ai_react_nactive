@@ -1,61 +1,49 @@
 import { AuthController } from '@/controllers/AuthController';
 import { PostController } from '@/controllers/PostController';
-import { IPost } from '@/types';
+import { IPost, IUser } from '@/types';
 import FeedScreen from '@/views/screens/FeedScreen';
 import LoginScreen from '@/views/screens/LoginScreen';
 import NewPostScreen from '@/views/screens/NewPostScreen';
-import PostDetailScreen from '@/views/screens/PostDetailScreen'; // <-- Importe a tela criada
+import PostDetailScreen from '@/views/screens/PostDetailScreen';
 import RegisterScreen from '@/views/screens/RegisterScreen';
 import { LocationObjectCoords } from 'expo-location';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, StyleSheet, View } from 'react-native';
 
 export default function App() {
-  // Telas possíveis: 'login' | 'register' | 'feed' | 'new_post' | 'post_detail'
   const [currentScreen, setCurrentScreen] = useState<string>('login');
   const [loading, setLoading] = useState<boolean>(true);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<IUser | null>(null);
 
-  // Estados de Posts
   const [posts, setPosts] = useState<IPost[]>([]);
-  const [selectedPost, setSelectedPost] = useState<IPost | null>(null); // <-- Post selecionado para detalhe
+  const [selectedPost, setSelectedPost] = useState<IPost | null>(null);
 
-  // Estados do Formulário de Novo Post
+  // Estados de formulário
   const [photo, setPhoto] = useState<string | null>(null);
   const [location, setLocation] = useState<string>('');
   const [coords, setCoords] = useState<LocationObjectCoords | null>(null);
   const [details, setDetails] = useState<string>('');
 
-  // Verifica sessão ativa ao iniciar
   useEffect(() => {
-    checkAuth();
-    loadPosts();
+    const init = async () => {
+      try {
+        const currentUser = await AuthController.getCurrentUser();
+        if (currentUser) {
+          setUser(currentUser);
+          setCurrentScreen('feed');
+        }
+        const loadedPosts = await PostController.getPosts();
+        setPosts(loadedPosts);
+      } catch (error) {
+        console.log('Erro ao inicializar:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    init();
   }, []);
 
-  const checkAuth = async () => {
-    try {
-      const currentUser = await AuthController.getCurrentUser();
-      if (currentUser) {
-        setUser(currentUser);
-        setCurrentScreen('feed');
-      }
-    } catch (error) {
-      console.log('Erro ao checar auth:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const loadPosts = async () => {
-    try {
-      const loadedPosts = await PostController.getPosts();
-      setPosts(loadedPosts);
-    } catch (error) {
-      console.log('Erro ao carregar posts:', error);
-    }
-  };
-
-  // Handlers de Novo Post
   const handleTakePhoto = async () => {
     try {
       const uri = await PostController.takePhoto();
@@ -91,10 +79,9 @@ export default function App() {
         location,
         details,
         author: user?.name || 'Anônimo',
-        coords, // Passa as coordenadas capturadas
+        coords,
       });
       setPosts(updatedPosts);
-      // Limpa o formulário
       setPhoto(null);
       setLocation('');
       setCoords(null);
@@ -120,23 +107,22 @@ export default function App() {
     );
   }
 
-  // Renderização condicional de telas
   return (
     <View style={styles.container}>
       {currentScreen === 'login' && (
         <LoginScreen
-          onLoginSuccess={(loggedUser) => {
+          onLogin={(loggedUser: IUser) => {
             setUser(loggedUser);
             setCurrentScreen('feed');
           }}
-          onNavigateRegister={() => setCurrentScreen('register')}
+          onNavigateToRegister={() => setCurrentScreen('register')}
         />
       )}
 
       {currentScreen === 'register' && (
         <RegisterScreen
-          onRegisterSuccess={() => setCurrentScreen('login')}
-          onNavigateLogin={() => setCurrentScreen('login')}
+          onRegister={() => setCurrentScreen('login')}
+          onNavigateToLogin={() => setCurrentScreen('login')}
         />
       )}
 
@@ -147,7 +133,7 @@ export default function App() {
           onLogout={handleLogout}
           onSelectPost={(post) => {
             setSelectedPost(post);
-            setCurrentScreen('post_detail'); // <-- Direciona para a tela de detalhes
+            setCurrentScreen('post_detail');
           }}
         />
       )}
@@ -173,7 +159,7 @@ export default function App() {
           post={selectedPost}
           onBack={() => {
             setSelectedPost(null);
-            setCurrentScreen('feed'); // <-- Retorna ao feed
+            setCurrentScreen('feed');
           }}
         />
       )}
