@@ -9,6 +9,7 @@ interface ICreatePostInput {
     location: string;
     details: string;
     author: string;
+    coords?: Location.LocationObjectCoords | null; // <-- Adicione aqui
 }
 
 export const PostController = {
@@ -118,7 +119,7 @@ export const PostController = {
         };
     },
 
-    createPost: async ({ photo, location, details, author }: ICreatePostInput): Promise<IPost[]> => {
+    createPost: async ({ photo, location, details, author, coords }: ICreatePostInput): Promise<IPost[]> => {
         if (!photo || !location || !details) {
             throw new Error('Preencha a foto, localização e detalhes!');
         }
@@ -129,9 +130,14 @@ export const PostController = {
             photo,
             location,
             details,
+            coords: coords || null,
             date: new Date().toLocaleDateString('pt-BR'),
         };
 
         return await PostModel.savePost(newPost);
+    },
+
+    getPosts: async (): Promise<IPost[]> => {
+        return await PostModel.getPosts();
     },
 };
