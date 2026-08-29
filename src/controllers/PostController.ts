@@ -58,6 +58,7 @@ export const PostController = {
     },
 
     // Retorna o Endereço Formatado + Objeto de Coordenadas
+    // Retorna o Endereço Formatado + Objeto de Coordenadas
     getLocation: async (): Promise<{ formattedAddress: string; coords: Location.LocationObjectCoords }> => {
         // 1. Verifica se os serviços de GPS do aparelho estão ativos
         const isLocationEnabled = await Location.hasServicesEnabledAsync();
@@ -71,14 +72,13 @@ export const PostController = {
             throw new Error('Permissão de localização negada.');
         }
 
-        // 3. Obtém a posição com fallback de precisão (evita timeout no emulador)
+        // 3. Força precisão máxima (obrigatório para emulador ler nova coordenada)
         let loc: Location.LocationObject;
         try {
             loc = await Location.getCurrentPositionAsync({
-                accuracy: Location.Accuracy.Balanced,
+                accuracy: Location.Accuracy.Highest,
             });
         } catch {
-            // Contingência para emuladores que não respondem à posição atual imediata
             const lastKnown = await Location.getLastKnownPositionAsync();
             if (lastKnown) {
                 loc = lastKnown;
@@ -86,6 +86,8 @@ export const PostController = {
                 throw new Error('Não foi possível obter a localização atual. Defina uma coordenada no emulador.');
             }
         }
+
+        console.log("Coordenadas capturadas do GPS:", loc.coords.latitude, loc.coords.longitude);
 
         // 4. Geolocalização Reversa para obter o nome da rua/bairro
         let addressString = `Lat: ${loc.coords.latitude.toFixed(4)}, Long: ${loc.coords.longitude.toFixed(4)}`;
@@ -100,14 +102,14 @@ export const PostController = {
                 const addr = addressResponse[0];
                 const street = addr.street || addr.name || '';
                 const district = addr.district || addr.subregion || '';
-                const city = addr.city || '';
+                const city = addr.city || addr.region || '';
 
-                if (street || district) {
+                if (street || district || city) {
                     addressString = [street, district, city].filter(Boolean).join(', ');
                 }
             }
         } catch {
-            // Mantém a string de Lat/Long caso a geolocalização reversa falhe sem internet
+            // Mantém as coordenadas caso a geolocalização reversa falhe
         }
 
         return {

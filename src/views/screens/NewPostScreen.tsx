@@ -1,9 +1,10 @@
-import React from 'react';
-import { ScrollView, View, Text, Image, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
-import MapView, { Marker, PROVIDER_DEFAULT, UrlTile } from 'react-native-maps';
-import { LocationObjectCoords } from 'expo-location';
-import CustomInput from '../components/CustomInput';
 import { CustomButton } from '@/views/components/CustomButton';
+import { LocationObjectCoords } from 'expo-location';
+import React from 'react';
+import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import CustomInput from '../components/CustomInput';
 
 interface NewPostScreenProps {
     photo: string | null;
@@ -32,8 +33,19 @@ export default function NewPostScreen({
     onCreatePost,
     onCancel,
 }: NewPostScreenProps) {
+    const insets = useSafeAreaInsets();
+
     return (
-        <ScrollView contentContainerStyle={styles.container}>
+        <ScrollView
+            contentContainerStyle={[
+                styles.container,
+                {
+                    paddingTop: Math.max(insets.top, 20),
+                    paddingBottom: Math.max(insets.bottom + 40, 50), // Garante espaço extra para a barra inferior
+                },
+            ]}
+            showsVerticalScrollIndicator={false}
+        >
             <Text style={styles.title}>Registrar Buraco 🕳️</Text>
 
             {/* Opções de Foto */}
@@ -73,8 +85,8 @@ export default function NewPostScreen({
             {coords && (
                 <View style={styles.mapContainer}>
                     <MapView
+                        key={`${coords.latitude}-${coords.longitude}`}
                         style={styles.map}
-                        mapType="none" // Remove a camada nativa do Google
                         initialRegion={{
                             latitude: coords.latitude,
                             longitude: coords.longitude,
@@ -82,18 +94,13 @@ export default function NewPostScreen({
                             longitudeDelta: 0.005,
                         }}
                     >
-                        <UrlTile
-                            urlTemplate="https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                            maximumZ={19}
-                            flipY={false}
-                        />
-
                         <Marker
                             coordinate={{
                                 latitude: coords.latitude,
                                 longitude: coords.longitude,
                             }}
                             title="Local do Buraco"
+                            description={location}
                         />
                     </MapView>
                 </View>
@@ -117,11 +124,12 @@ export default function NewPostScreen({
                 />
             </View>
 
-            <CustomButton title="Publicar Registro" onPress={onCreatePost} />
-
-            <TouchableOpacity onPress={onCancel}>
-                <Text style={styles.cancelLink}>Cancelar</Text>
-            </TouchableOpacity>
+            <View style={styles.actionsContainer}>
+                <CustomButton title="Publicar Registro" onPress={onCreatePost} />
+                <TouchableOpacity onPress={onCancel} style={styles.cancelButton}>
+                    <Text style={styles.cancelLink}>Cancelar</Text>
+                </TouchableOpacity>
+            </View>
         </ScrollView>
     );
 }
@@ -129,16 +137,15 @@ export default function NewPostScreen({
 const styles = StyleSheet.create({
     container: {
         flexGrow: 1,
-        backgroundColor: '#f5f5f5',
+        backgroundColor: '#1E1E1E',
         alignItems: 'center',
-        padding: 20,
-        paddingTop: 50,
+        paddingHorizontal: 20,
     },
     title: {
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 20,
-        color: '#333',
+        color: '#FFFFFF',
     },
     photoBoxContainer: {
         width: '100%',
@@ -149,10 +156,10 @@ const styles = StyleSheet.create({
     photoOptionButton: {
         flex: 1,
         height: 120,
-        backgroundColor: '#e1e1e1',
+        backgroundColor: '#2A2A2A',
         borderRadius: 8,
         borderWidth: 2,
-        borderColor: '#ccc',
+        borderColor: '#444',
         borderStyle: 'dashed',
         justifyContent: 'center',
         alignItems: 'center',
@@ -161,12 +168,12 @@ const styles = StyleSheet.create({
     galleryOptionButton: {
         marginRight: 0,
         marginLeft: 5,
-        backgroundColor: '#e8f0fe',
-        borderColor: '#2e64e5',
+        backgroundColor: '#1E2A38',
+        borderColor: '#2E64E5',
     },
     photoOptionText: {
         fontSize: 14,
-        color: '#333',
+        color: '#EEEEEE',
         fontWeight: '600',
         textAlign: 'center',
     },
@@ -187,7 +194,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
     changeButton: { padding: 8 },
-    changeText: { color: '#2e64e5', fontWeight: '600' },
+    changeText: { color: '#4DA6FF', fontWeight: '600' },
     fullWidthButton: {
         width: '100%',
         marginVertical: 10,
@@ -205,9 +212,9 @@ const styles = StyleSheet.create({
     },
     textAreaContainer: {
         width: '100%',
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#2A2A2A',
         borderWidth: 1,
-        borderColor: '#E0E0E0',
+        borderColor: '#444',
         borderRadius: 8,
         marginVertical: 10,
         paddingHorizontal: 12,
@@ -217,11 +224,18 @@ const styles = StyleSheet.create({
         minHeight: 80,
         textAlignVertical: 'top',
         fontSize: 14,
-        color: '#333333',
+        color: '#FFFFFF',
+    },
+    actionsContainer: {
+        width: '100%',
+        marginTop: 10,
+    },
+    cancelButton: {
+        alignItems: 'center',
+        paddingVertical: 12,
     },
     cancelLink: {
-        color: '#d9534f',
-        marginTop: 10,
+        color: '#FF6B6B',
         fontWeight: '600',
     },
 });

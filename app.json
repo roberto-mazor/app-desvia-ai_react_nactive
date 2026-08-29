@@ -22,7 +22,7 @@
       "predictiveBackGestureEnabled": false,
       "config": {
         "googleMaps": {
-          "apiKey": "AIzaSyD-TEST_KEY_FOR_EMULATOR_DEV_ONLY"
+          "apiKey": "SUA_CHAVE_AQUI"
         }
       },
       "permissions": [
@@ -78,7 +78,6 @@
           "locationAlwaysAndWhenInUsePermission": "O app precisa da sua localização para mapear onde está o buraco."
         }
       ],
-      "@react-native-google-signin/google-signin",
       "expo-web-browser"
     ],
     "experiments": {
