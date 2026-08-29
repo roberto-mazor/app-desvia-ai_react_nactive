@@ -98,6 +98,12 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#FFF',
     },
+    logoutButton: {          // <-- Adicione este bloco
+        paddingVertical: 6,
+        paddingHorizontal: 12,
+        borderRadius: 6,
+        backgroundColor: 'rgba(255, 107, 107, 0.1)',
+    },
     logoutText: {
         color: '#FF6B6B',
         fontWeight: '600',

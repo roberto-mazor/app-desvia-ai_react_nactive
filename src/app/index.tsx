@@ -15,10 +15,20 @@ export default function App() {
   const [loading, setLoading] = useState<boolean>(true);
   const [user, setUser] = useState<IUser | null>(null);
 
+  // Estados de Login
+  const [loginEmail, setLoginEmail] = useState<string>('');
+  const [loginPassword, setLoginPassword] = useState<string>('');
+
+  // Estados de Registro
+  const [name, setName] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+
+  // Estados de Posts
   const [posts, setPosts] = useState<IPost[]>([]);
   const [selectedPost, setSelectedPost] = useState<IPost | null>(null);
 
-  // Estados de formulário
+  // Estados do Formulário de Novo Post
   const [photo, setPhoto] = useState<string | null>(null);
   const [location, setLocation] = useState<string>('');
   const [coords, setCoords] = useState<LocationObjectCoords | null>(null);
@@ -44,6 +54,33 @@ export default function App() {
     init();
   }, []);
 
+  // Ações de Login e Cadastro
+  const handleLogin = async () => {
+    try {
+      const loggedUser = await AuthController.login(loginEmail, loginPassword);
+      setUser(loggedUser);
+      setLoginEmail('');
+      setLoginPassword('');
+      setCurrentScreen('feed');
+    } catch (error: any) {
+      Alert.alert('Erro no Login', error.message);
+    }
+  };
+
+  const handleRegister = async () => {
+    try {
+      await AuthController.register(name, email, password);
+      Alert.alert('Sucesso', 'Conta criada com sucesso! Faça login.');
+      setName('');
+      setEmail('');
+      setPassword('');
+      setCurrentScreen('login');
+    } catch (error: any) {
+      Alert.alert('Erro no Cadastro', error.message);
+    }
+  };
+
+  // Ações de Criação de Post
   const handleTakePhoto = async () => {
     try {
       const uri = await PostController.takePhoto();
@@ -111,17 +148,24 @@ export default function App() {
     <View style={styles.container}>
       {currentScreen === 'login' && (
         <LoginScreen
-          onLogin={(loggedUser: IUser) => {
-            setUser(loggedUser);
-            setCurrentScreen('feed');
-          }}
+          email={loginEmail}
+          setEmail={setLoginEmail}
+          password={loginPassword}
+          setPassword={setLoginPassword}
+          onLogin={handleLogin}
           onNavigateToRegister={() => setCurrentScreen('register')}
         />
       )}
 
       {currentScreen === 'register' && (
         <RegisterScreen
-          onRegister={() => setCurrentScreen('login')}
+          name={name}
+          setName={setName}
+          email={email}
+          setEmail={setEmail}
+          password={password}
+          setPassword={setPassword}
+          onRegister={handleRegister}
           onNavigateToLogin={() => setCurrentScreen('login')}
         />
       )}
