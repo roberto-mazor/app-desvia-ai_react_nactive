@@ -1,8 +1,8 @@
+import { Colors } from '@/Colors';
 import { CustomButton } from '@/views/components/CustomButton';
 import CustomInput from '@/views/components/CustomInput';
-import { Colors } from '@/Colors';
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, Image, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface LoginScreenProps {
@@ -29,15 +29,24 @@ export default function LoginScreen({
             style={[
                 styles.container,
                 {
-                    paddingTop: Math.max(insets.top + 40, 60),
+                    paddingTop: Math.max(insets.top + 30, 50),
                     paddingBottom: Math.max(insets.bottom + 20, 30),
                 },
             ]}
         >
-            <Text style={styles.title}>Desvia Aí 🕳️</Text>
-            <Text style={styles.subtitle}>Faça login para continuar</Text>
+            {/* Header da Marca */}
+            <View style={styles.header}>
+                <Image
+                    source={require('../../../assets/images/buraco1.png')}
+                    style={styles.brandIconImage}
+                    resizeMode="contain"
+                />
+                <Text style={styles.title}>Desvia Aí</Text>
+                <Text style={styles.subtitle}>Mapeamento colaborativo de vias urbanas</Text>
+            </View>
 
-            <View style={styles.form}>
+            {/* Card de Formulário */}
+            <View style={styles.card}>
                 <CustomInput
                     placeholder="Seu e-mail"
                     value={email}
@@ -53,11 +62,13 @@ export default function LoginScreen({
                     secureTextEntry
                 />
 
-                <CustomButton title="Entrar" onPress={onLogin} />
+                <View style={styles.buttonWrapper}>
+                    <CustomButton title="Acessar Plataforma" onPress={onLogin} />
+                </View>
 
                 <TouchableOpacity onPress={onNavigateToRegister} style={styles.registerLink}>
                     <Text style={styles.registerText}>
-                        Não tem conta? <Text style={styles.highlight}>Cadastre-se</Text>
+                        Não possui uma conta? <Text style={styles.highlight}>Cadastre-se</Text>
                     </Text>
                 </TouchableOpacity>
             </View>
@@ -69,36 +80,61 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: Colors.background,
-        paddingHorizontal: 25,
+        paddingHorizontal: 22,
         justifyContent: 'center',
     },
+    header: {
+        alignItems: 'center',
+        marginBottom: 32,
+    },
+    iconCircle: {
+        width: 72,
+        height: 72,
+        borderRadius: 36,
+        backgroundColor: Colors.surface,
+        borderWidth: 1.5,
+        borderColor: Colors.border,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 12,
+    },
+    brandIconImage: {
+        width: 80,
+        height: 80,
+        marginBottom: 20
+    },
     title: {
-        fontSize: 32,
-        fontWeight: 'bold',
-        color: '#FFFFFF',
-        textAlign: 'center',
-        marginBottom: 8,
+        fontSize: 30,
+        fontWeight: '800',
+        color: Colors.textPrimary,
+        letterSpacing: -0.5,
     },
     subtitle: {
-        fontSize: 16,
-        color: '#888888',
+        fontSize: 14,
+        color: Colors.textSecondary,
         textAlign: 'center',
-        marginBottom: 40,
+        marginTop: 6,
     },
-    form: {
-        width: '100%',
+    card: {
+        backgroundColor: Colors.surface,
+        borderRadius: 20,
+        padding: 24,
+        borderWidth: 1,
+        borderColor: Colors.border,
+    },
+    buttonWrapper: {
+        marginTop: 8,
     },
     registerLink: {
-        marginTop: 20,
+        marginTop: 18,
         alignItems: 'center',
-        paddingVertical: 10,
     },
     registerText: {
-        color: '#AAAAAA',
+        color: Colors.textSecondary,
         fontSize: 14,
     },
     highlight: {
-        color: '#0066FF',
-        fontWeight: 'bold',
+        color: Colors.secondary,
+        fontWeight: '700',
     },
 });
