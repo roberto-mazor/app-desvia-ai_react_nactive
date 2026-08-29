@@ -44,12 +44,4 @@ export const AuthController = {
     logout: async (): Promise<void> => {
         await AsyncStorage.removeItem(CURRENT_USER_KEY);
     },
-
-    formatGoogleUser: (userInfo: any): IUser => {
-        return {
-            id: userInfo.user.id,
-            name: userInfo.user.name,
-            email: userInfo.user.email,
-        };
-    },
 };
