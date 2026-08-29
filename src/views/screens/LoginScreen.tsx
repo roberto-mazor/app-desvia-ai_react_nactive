@@ -1,15 +1,15 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import CustomInput from '@/views/components/CustomInput';
 import { CustomButton } from '@/views/components/CustomButton';
+import CustomInput from '@/views/components/CustomInput';
+import React from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface LoginScreenProps {
     email: string;
-    setEmail: (val: string) => void;
+    setEmail: (value: string) => void;
     password: string;
-    setPassword: (val: string) => void;
+    setPassword: (value: string) => void;
     onLogin: () => void;
-    onGoogleLogin: () => void;
     onNavigateToRegister: () => void;
 }
 
@@ -19,37 +19,47 @@ export default function LoginScreen({
     password,
     setPassword,
     onLogin,
-    onGoogleLogin,
     onNavigateToRegister,
 }: LoginScreenProps) {
+    const insets = useSafeAreaInsets();
+
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>DesviaAí 🕳️</Text>
+        <View
+            style={[
+                styles.container,
+                {
+                    paddingTop: Math.max(insets.top + 40, 60),
+                    paddingBottom: Math.max(insets.bottom + 20, 30),
+                },
+            ]}
+        >
+            <Text style={styles.title}>Desvia Aí 🕳️</Text>
+            <Text style={styles.subtitle}>Faça login para continuar</Text>
 
-            <CustomInput
-                placeholder="E-mail"
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-            />
+            <View style={styles.form}>
+                <CustomInput
+                    placeholder="Seu e-mail"
+                    value={email}
+                    onChangeText={setEmail}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                />
 
-            <CustomInput
-                placeholder="Senha"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-            />
+                <CustomInput
+                    placeholder="Sua senha"
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry
+                />
 
-            <CustomButton title="Entrar" onPress={onLogin} />
+                <CustomButton title="Entrar" onPress={onLogin} />
 
-            {/* Botão de Login com Google */}
-            <TouchableOpacity style={styles.googleButton} onPress={onGoogleLogin}>
-                <Text style={styles.googleButtonText}>🌐 Entrar com Google</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={onNavigateToRegister}>
-                <Text style={styles.link}>Não tem uma conta? Cadastre-se</Text>
-            </TouchableOpacity>
+                <TouchableOpacity onPress={onNavigateToRegister} style={styles.registerLink}>
+                    <Text style={styles.registerText}>
+                        Não tem conta? <Text style={styles.highlight}>Cadastre-se</Text>
+                    </Text>
+                </TouchableOpacity>
+            </View>
         </View>
     );
 }
@@ -57,35 +67,37 @@ export default function LoginScreen({
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: '#121212',
+        paddingHorizontal: 25,
         justifyContent: 'center',
-        padding: 20,
-        backgroundColor: '#f5f5f5',
     },
     title: {
-        fontSize: 28,
+        fontSize: 32,
         fontWeight: 'bold',
+        color: '#FFFFFF',
         textAlign: 'center',
-        marginBottom: 30,
-        color: '#333',
+        marginBottom: 8,
     },
-    googleButton: {
-        backgroundColor: '#ffffff',
-        borderColor: '#4285F4',
-        borderWidth: 1.5,
-        padding: 12,
-        borderRadius: 8,
-        alignItems: 'center',
-        marginTop: 10,
-        marginBottom: 15,
-    },
-    googleButtonText: {
-        color: '#4285F4',
-        fontWeight: 'bold',
+    subtitle: {
         fontSize: 16,
-    },
-    link: {
+        color: '#888888',
         textAlign: 'center',
-        color: '#2e64e5',
-        marginTop: 10,
+        marginBottom: 40,
+    },
+    form: {
+        width: '100%',
+    },
+    registerLink: {
+        marginTop: 20,
+        alignItems: 'center',
+        paddingVertical: 10,
+    },
+    registerText: {
+        color: '#AAAAAA',
+        fontSize: 14,
+    },
+    highlight: {
+        color: '#0066FF',
+        fontWeight: 'bold',
     },
 });
