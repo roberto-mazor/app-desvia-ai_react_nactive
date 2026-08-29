@@ -55,14 +55,13 @@ export default function FeedScreen({ posts, onNewPost, onLogout, onSelectPost }:
             ]}
         >
             {/* Header */}
-            <View style={styles.header}>
-                <View style={styles.brandTitleRow}>
-                    <Text style={styles.brandIcon}>🕳️</Text>
-                    <Text style={styles.headerTitle}>Desvia Aí</Text>
-                </View>
-                <TouchableOpacity onPress={onLogout} style={styles.logoutButton}>
-                    <Text style={styles.logoutText}>Sair</Text>
-                </TouchableOpacity>
+            <View style={styles.brandTitleRow}>
+                <Image
+                    source={require('../../../assets/images/buraco1.png')}
+                    style={{ width: 28, height: 28, marginRight: 10 }}
+                    resizeMode="contain"
+                />
+                <Text style={styles.headerTitle}>Desvia Aí</Text>
             </View>
 
             {/* Lista de Registros */}
@@ -102,7 +101,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingHorizontal: 20,
+        paddingHorizontal: 18,
         paddingBottom: 16,
         borderBottomWidth: 1,
         borderBottomColor: Colors.surface,
@@ -110,10 +109,12 @@ const styles = StyleSheet.create({
     brandTitleRow: {
         flexDirection: 'row',
         alignItems: 'center',
+        paddingHorizontal: 20,
     },
     brandIcon: {
         fontSize: 22,
         marginRight: 8,
+        marginLeft: 30,
     },
     headerTitle: {
         fontSize: 24,
@@ -135,8 +136,9 @@ const styles = StyleSheet.create({
         fontSize: 13,
     },
     listContainer: {
-        padding: 18,
+        padding: 20,
         paddingBottom: 100,
+        paddingHorizontal: 18,
     },
     card: {
         backgroundColor: Colors.surface, // #1E293B (mesmo contraste refinado)
@@ -242,4 +244,5 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 16,
     },
+    
 });

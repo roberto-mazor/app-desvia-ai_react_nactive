@@ -47,7 +47,9 @@ export default function NewPostScreen({
             ]}
             showsVerticalScrollIndicator={false}
         >
-            <Text style={styles.title}>Registrar Buraco 🕳️</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 20 }}>
+                <Text style={styles.title}>Registrar Buraco</Text>
+            </View>
 
             {/* Opções de Foto */}
             {photo ? (
