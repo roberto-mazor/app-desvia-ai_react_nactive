@@ -1,226 +1,195 @@
 import { AuthController } from '@/controllers/AuthController';
 import { PostController } from '@/controllers/PostController';
-import { PostModel } from '@/models/PostModel';
-import { IPost, IUser } from '@/types';
+import { IPost } from '@/types';
 import FeedScreen from '@/views/screens/FeedScreen';
 import LoginScreen from '@/views/screens/LoginScreen';
 import NewPostScreen from '@/views/screens/NewPostScreen';
+import PostDetailScreen from '@/views/screens/PostDetailScreen'; // <-- Importe a tela criada
 import RegisterScreen from '@/views/screens/RegisterScreen';
-import * as Google from 'expo-auth-session/providers/google';
-import * as Location from 'expo-location';
-import * as WebBrowser from 'expo-web-browser';
+import { LocationObjectCoords } from 'expo-location';
 import React, { useEffect, useState } from 'react';
-import { Alert } from 'react-native';
-import { makeRedirectUri } from 'expo-auth-session';
+import { ActivityIndicator, Alert, StyleSheet, View } from 'react-native';
 
-WebBrowser.maybeCompleteAuthSession();
+export default function App() {
+  // Telas possíveis: 'login' | 'register' | 'feed' | 'new_post' | 'post_detail'
+  const [currentScreen, setCurrentScreen] = useState<string>('login');
+  const [loading, setLoading] = useState<boolean>(true);
+  const [user, setUser] = useState<any>(null);
 
-type ScreenType = 'login' | 'register' | 'feed' | 'new_post';
-
-export default function Index() {
-  const [screen, setScreen] = useState<ScreenType>('login');
-  const [currentUser, setCurrentUser] = useState<IUser | null>(null);
+  // Estados de Posts
   const [posts, setPosts] = useState<IPost[]>([]);
+  const [selectedPost, setSelectedPost] = useState<IPost | null>(null); // <-- Post selecionado para detalhe
 
-  // Estados de Formulário
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
-  // Estados da Publicação
+  // Estados do Formulário de Novo Post
   const [photo, setPhoto] = useState<string | null>(null);
-  const [location, setLocation] = useState('');
-  const [details, setDetails] = useState('');
+  const [location, setLocation] = useState<string>('');
+  const [coords, setCoords] = useState<LocationObjectCoords | null>(null);
+  const [details, setDetails] = useState<string>('');
 
-  // Estado para guardar a localização 
-  const [coords, setCoords] = useState<Location.LocationObjectCoords | null>(null);
-
-  // Para resolver e conseguir logar no Expo Go sem erros de URI
-  const redirectUri = makeRedirectUri({
-    native: 'https://auth.expo.io/@seu-usuario-expo/app-desvia-ai', // Substitua pelo seu usuário Expo se souber, ou deixe apenas a chamada padrão
-  });
-
-  // Hook do Google Auth
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
-    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
-  });
-
-  // Listener para capturar o retorno do Google
+  // Verifica sessão ativa ao iniciar
   useEffect(() => {
-    if (response?.type === 'success' && response.authentication?.accessToken) {
-      fetchGoogleUserInfo(response.authentication.accessToken);
-    }
-  }, [response]);
-
-  const fetchGoogleUserInfo = async (token: string) => {
-    try {
-      const res = await fetch('https://www.googleapis.com/userinfo/v2/me', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const userInfo = await res.json();
-      const user = AuthController.formatGoogleUser(userInfo);
-      setCurrentUser(user);
-      clearAuthFields();
-      setScreen('feed');
-    } catch (err: any) {
-      Alert.alert('Erro Google', err.message);
-    }
-  };
-
-  // Carregar posts salvos ao iniciar
-  useEffect(() => {
-    PostModel.getPosts().then(setPosts);
+    checkAuth();
+    loadPosts();
   }, []);
 
-  // Limpar formulário de autenticação
-  const clearAuthFields = () => {
-    setName('');
-    setEmail('');
-    setPassword('');
-  };
-
-  // --- HANDLERS ---
-  const handleLogin = async () => {
+  const checkAuth = async () => {
     try {
-      const user = await AuthController.login(email, password);
-      setCurrentUser(user);
-      clearAuthFields();
-      setScreen('feed');
-    } catch (err: any) {
-      Alert.alert('Erro no Login', err.message);
+      const currentUser = await AuthController.getCurrentUser();
+      if (currentUser) {
+        setUser(currentUser);
+        setCurrentScreen('feed');
+      }
+    } catch (error) {
+      console.log('Erro ao checar auth:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleRegister = async () => {
+  const loadPosts = async () => {
     try {
-      await AuthController.register(name, email, password);
-      Alert.alert('Sucesso', 'Cadastro realizado com sucesso!');
-      clearAuthFields();
-      setScreen('login');
-    } catch (err: any) {
-      Alert.alert('Erro no Cadastro', err.message);
+      const loadedPosts = await PostController.getPosts();
+      setPosts(loadedPosts);
+    } catch (error) {
+      console.log('Erro ao carregar posts:', error);
     }
   };
 
+  // Handlers de Novo Post
   const handleTakePhoto = async () => {
     try {
-      const photoUri = await PostController.takePhoto();
-      if (photoUri) setPhoto(photoUri);
-    } catch (err: any) {
-      Alert.alert('Câmera', err.message);
+      const uri = await PostController.takePhoto();
+      if (uri) setPhoto(uri);
+    } catch (error: any) {
+      Alert.alert('Erro', error.message);
     }
   };
 
   const handlePickGallery = async () => {
     try {
-      const photoUri = await PostController.pickImageFromGallery();
-      if (photoUri) setPhoto(photoUri);
-    } catch (err: any) {
-      Alert.alert('Galeria', err.message);
+      const uri = await PostController.pickImageFromGallery();
+      if (uri) setPhoto(uri);
+    } catch (error: any) {
+      Alert.alert('Erro', error.message);
     }
   };
 
   const handleGetLocation = async () => {
     try {
-      const locResult = await PostController.getLocation();
-      setLocation(locResult.formattedAddress);
-      setCoords(locResult.coords);
-    } catch (err: any) {
-      Alert.alert('Localização', err.message);
+      const result = await PostController.getLocation();
+      setLocation(result.formattedAddress);
+      setCoords(result.coords);
+    } catch (error: any) {
+      Alert.alert('Erro no GPS', error.message);
     }
   };
 
   const handleCreatePost = async () => {
-    if (!currentUser) return;
     try {
-      const updated = await PostController.createPost({
+      const updatedPosts = await PostController.createPost({
         photo,
         location,
         details,
-        author: currentUser.name,
+        author: user?.name || 'Anônimo',
+        coords, // Passa as coordenadas capturadas
       });
-      setPosts(updated);
-
+      setPosts(updatedPosts);
+      // Limpa o formulário
       setPhoto(null);
       setLocation('');
       setCoords(null);
       setDetails('');
-      setScreen('feed');
-    } catch (err: any) {
-      Alert.alert('Erro ao Publicar', err.message);
+      setCurrentScreen('feed');
+      Alert.alert('Sucesso', 'Registro publicado com sucesso!');
+    } catch (error: any) {
+      Alert.alert('Atenção', error.message);
     }
   };
 
-  const handleLogout = () => {
-    setCurrentUser(null);
-    clearAuthFields();
-    setScreen('login');
+  const handleLogout = async () => {
+    await AuthController.logout();
+    setUser(null);
+    setCurrentScreen('login');
   };
 
-  const handleGoogleLogin = () => {
-    promptAsync();
-  };
-
-  // --- RENDERIZAÇÃO CONDICIONAL DAS TELAS ---
-  if (screen === 'login') {
+  if (loading) {
     return (
-      <LoginScreen
-        email={email}
-        setEmail={setEmail}
-        password={password}
-        setPassword={setPassword}
-        onLogin={handleLogin}
-        onGoogleLogin={handleGoogleLogin}
-        onNavigateToRegister={() => setScreen('register')}
-      />
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0066FF" />
+      </View>
     );
   }
 
-  if (screen === 'register') {
-    return (
-      <RegisterScreen
-        name={name}
-        setName={setName}
-        email={email}
-        setEmail={setEmail}
-        password={password}
-        setPassword={setPassword}
-        onRegister={handleRegister}
-        onNavigateToLogin={() => setScreen('login')}
-      />
-    );
-  }
-
-  if (screen === 'new_post') {
-    return (
-      <NewPostScreen
-        photo={photo}
-        location={location}
-        setLocation={setLocation}
-        coords={coords}
-        details={details}
-        setDetails={setDetails}
-        onTakePhoto={handleTakePhoto}
-        onPickGallery={handlePickGallery}
-        onGetLocation={handleGetLocation}
-        onCreatePost={handleCreatePost}
-        onCancel={() => {
-          setPhoto(null);
-          setLocation('');
-          setCoords(null);
-          setDetails('');
-          setScreen('feed');
-        }}
-      />
-    );
-  }
-
+  // Renderização condicional de telas
   return (
-    <FeedScreen
-      posts={posts}
-      onNavigateToNewPost={() => setScreen('new_post')}
-      onLogout={handleLogout}
-    />
+    <View style={styles.container}>
+      {currentScreen === 'login' && (
+        <LoginScreen
+          onLoginSuccess={(loggedUser) => {
+            setUser(loggedUser);
+            setCurrentScreen('feed');
+          }}
+          onNavigateRegister={() => setCurrentScreen('register')}
+        />
+      )}
+
+      {currentScreen === 'register' && (
+        <RegisterScreen
+          onRegisterSuccess={() => setCurrentScreen('login')}
+          onNavigateLogin={() => setCurrentScreen('login')}
+        />
+      )}
+
+      {currentScreen === 'feed' && (
+        <FeedScreen
+          posts={posts}
+          onNewPost={() => setCurrentScreen('new_post')}
+          onLogout={handleLogout}
+          onSelectPost={(post) => {
+            setSelectedPost(post);
+            setCurrentScreen('post_detail'); // <-- Direciona para a tela de detalhes
+          }}
+        />
+      )}
+
+      {currentScreen === 'new_post' && (
+        <NewPostScreen
+          photo={photo}
+          location={location}
+          setLocation={setLocation}
+          coords={coords}
+          details={details}
+          setDetails={setDetails}
+          onTakePhoto={handleTakePhoto}
+          onPickGallery={handlePickGallery}
+          onGetLocation={handleGetLocation}
+          onCreatePost={handleCreatePost}
+          onCancel={() => setCurrentScreen('feed')}
+        />
+      )}
+
+      {currentScreen === 'post_detail' && selectedPost && (
+        <PostDetailScreen
+          post={selectedPost}
+          onBack={() => {
+            setSelectedPost(null);
+            setCurrentScreen('feed'); // <-- Retorna ao feed
+          }}
+        />
+      )}
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#121212',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#121212',
+  },
+});
