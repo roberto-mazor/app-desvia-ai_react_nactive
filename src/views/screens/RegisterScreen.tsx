@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
         fontSize: 26,
         fontWeight: 'bold',
         marginBottom: 20,
-        color: '#333',
+        color: Colors.textPrimary,
     },
     link: {
         color: '#2e64e5',

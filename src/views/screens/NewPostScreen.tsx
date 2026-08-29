@@ -1,11 +1,11 @@
 import { Colors } from '@/Colors';
 import { CustomButton } from '@/views/components/CustomButton';
+import CustomInput from '@/views/components/CustomInput';
 import { LocationObjectCoords } from 'expo-location';
 import React from 'react';
 import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import CustomInput from '../components/CustomInput';
 
 interface NewPostScreenProps {
     photo: string | null;
@@ -41,14 +41,19 @@ export default function NewPostScreen({
             contentContainerStyle={[
                 styles.container,
                 {
-                    paddingTop: Math.max(insets.top, 20),
-                    paddingBottom: Math.max(insets.bottom + 40, 50), // Garante espaço extra para a barra inferior
+                    paddingTop: Math.max(insets.top + 10, 20),
+                    paddingBottom: Math.max(insets.bottom + 30, 40),
                 },
             ]}
             showsVerticalScrollIndicator={false}
         >
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 20 }}>
-                <Text style={styles.title}>Registrar Buraco</Text>
+            {/* Header com Botão Voltar */}
+            <View style={styles.header}>
+                <TouchableOpacity onPress={onCancel} style={styles.backButton} activeOpacity={0.7}>
+                    <Text style={styles.backText}>← Voltar</Text>
+                </TouchableOpacity>
+                <Text style={styles.headerTitle}>Registrar Buraco</Text>
+                <View style={styles.headerPlaceholder} />
             </View>
 
             {/* Opções de Foto */}
@@ -66,11 +71,13 @@ export default function NewPostScreen({
                 </View>
             ) : (
                 <View style={styles.photoBoxContainer}>
-                    <TouchableOpacity style={styles.photoOptionButton} onPress={onTakePhoto}>
-                        <Text style={styles.photoOptionText}>📸 Tirar Foto</Text>
+                    <TouchableOpacity style={styles.photoOptionButton} activeOpacity={0.8} onPress={onTakePhoto}>
+                        <Text style={styles.photoOptionIcon}>📸</Text>
+                        <Text style={styles.photoOptionText}>Tirar Foto</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={[styles.photoOptionButton, styles.galleryOptionButton]} onPress={onPickGallery}>
-                        <Text style={styles.photoOptionText}>🖼️ Galeria de Fotos</Text>
+                    <TouchableOpacity style={[styles.photoOptionButton, styles.galleryOptionButton]} activeOpacity={0.8} onPress={onPickGallery}>
+                        <Text style={styles.photoOptionIcon}>🖼️</Text>
+                        <Text style={styles.photoOptionText}>Galeria de Fotos</Text>
                     </TouchableOpacity>
                 </View>
             )}
@@ -118,7 +125,7 @@ export default function NewPostScreen({
             <View style={styles.textAreaContainer}>
                 <TextInput
                     placeholder="Detalhes (Ex: Buraco profundo na faixa da direita)"
-                    placeholderTextColor="#888"
+                    placeholderTextColor={Colors.textSecondary}
                     value={details}
                     onChangeText={setDetails}
                     multiline
@@ -127,11 +134,9 @@ export default function NewPostScreen({
                 />
             </View>
 
+            {/* Botão de Ação Único em Largura Total */}
             <View style={styles.actionsContainer}>
                 <CustomButton title="Publicar Registro" onPress={onCreatePost} />
-                <TouchableOpacity onPress={onCancel} style={styles.cancelButton}>
-                    <Text style={styles.cancelLink}>Cancelar</Text>
-                </TouchableOpacity>
             </View>
         </ScrollView>
     );
@@ -141,54 +146,75 @@ const styles = StyleSheet.create({
     container: {
         flexGrow: 1,
         backgroundColor: Colors.background,
-        alignItems: 'center',
         paddingHorizontal: 20,
     },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 20,
-        color: '#FFFFFF',
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        width: '100%',
+        marginBottom: 24,
+    },
+    backButton: {
+        paddingVertical: 8,
+        paddingHorizontal: 4,
+    },
+    backText: {
+        color: Colors.secondary,
+        fontSize: 16,
+        fontWeight: '700',
+    },
+    headerTitle: {
+        fontSize: 20,
+        fontWeight: '800',
+        color: Colors.textPrimary,
+        letterSpacing: -0.5,
+    },
+    headerPlaceholder: {
+        width: 60, // Equilibra o espaço ocupado pelo botão Voltar para centralizar o título
     },
     photoBoxContainer: {
         width: '100%',
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginBottom: 15,
+        marginBottom: 16,
+        gap: 12,
     },
     photoOptionButton: {
         flex: 1,
-        height: 120,
-        backgroundColor: '#2A2A2A',
-        borderRadius: 8,
-        borderWidth: 2,
-        borderColor: '#444',
+        height: 110,
+        backgroundColor: Colors.surface,
+        borderRadius: 14,
+        borderWidth: 1.5,
+        borderColor: Colors.border,
         borderStyle: 'dashed',
         justifyContent: 'center',
         alignItems: 'center',
-        marginRight: 5,
     },
     galleryOptionButton: {
-        marginRight: 0,
-        marginLeft: 5,
-        backgroundColor: '#1E2A38',
-        borderColor: '#2E64E5',
+        backgroundColor: Colors.surface,
+        borderColor: Colors.border,
+    },
+    photoOptionIcon: {
+        fontSize: 26,
+        marginBottom: 6,
     },
     photoOptionText: {
-        fontSize: 14,
-        color: '#EEEEEE',
-        fontWeight: '600',
-        textAlign: 'center',
+        fontSize: 13,
+        color: Colors.textPrimary,
+        fontWeight: '700',
     },
     imageContainer: {
         width: '100%',
-        marginBottom: 15,
+        marginBottom: 16,
         alignItems: 'center',
     },
     preview: {
         width: '100%',
         height: 200,
-        borderRadius: 8,
+        borderRadius: 14,
+        borderWidth: 1,
+        borderColor: Colors.border,
     },
     changeButtonsRow: {
         flexDirection: 'row',
@@ -196,18 +222,27 @@ const styles = StyleSheet.create({
         width: '100%',
         marginTop: 10,
     },
-    changeButton: { padding: 8 },
-    changeText: { color: '#4DA6FF', fontWeight: '600' },
+    changeButton: {
+        paddingVertical: 6,
+        paddingHorizontal: 12,
+    },
+    changeText: {
+        color: Colors.secondary,
+        fontWeight: '700',
+        fontSize: 13,
+    },
     fullWidthButton: {
         width: '100%',
-        marginVertical: 10,
+        marginBottom: 16,
     },
     mapContainer: {
         width: '100%',
-        height: 200,
-        borderRadius: 8,
+        height: 180,
+        borderRadius: 14,
         overflow: 'hidden',
-        marginVertical: 10,
+        marginBottom: 16,
+        borderWidth: 1.5,
+        borderColor: Colors.border,
     },
     map: {
         width: '100%',
@@ -215,30 +250,22 @@ const styles = StyleSheet.create({
     },
     textAreaContainer: {
         width: '100%',
-        backgroundColor: '#2A2A2A',
-        borderWidth: 1,
-        borderColor: '#444',
-        borderRadius: 8,
-        marginVertical: 10,
-        paddingHorizontal: 12,
-        paddingVertical: 8,
+        backgroundColor: Colors.surface,
+        borderWidth: 1.5,
+        borderColor: Colors.border,
+        borderRadius: 12,
+        marginBottom: 16,
+        paddingHorizontal: 16,
+        paddingVertical: 12,
     },
     textArea: {
         minHeight: 80,
         textAlignVertical: 'top',
-        fontSize: 14,
-        color: '#FFFFFF',
+        fontSize: 15,
+        color: Colors.textPrimary,
     },
     actionsContainer: {
         width: '100%',
-        marginTop: 10,
-    },
-    cancelButton: {
-        alignItems: 'center',
-        paddingVertical: 12,
-    },
-    cancelLink: {
-        color: '#FF6B6B',
-        fontWeight: '600',
+        marginTop: 8,
     },
 });

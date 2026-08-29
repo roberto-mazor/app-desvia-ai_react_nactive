@@ -54,14 +54,24 @@ export default function FeedScreen({ posts, onNewPost, onLogout, onSelectPost }:
                 },
             ]}
         >
-            {/* Header */}
-            <View style={styles.brandTitleRow}>
-                <Image
-                    source={require('../../../assets/images/buraco1.png')}
-                    style={{ width: 28, height: 28, marginRight: 10 }}
-                    resizeMode="contain"
-                />
-                <Text style={styles.headerTitle}>Desvia Aí</Text>
+            {/* Header: Logo e Título à esquerda | Botão de Sair à direita */}
+            <View style={styles.header}>
+                <View style={styles.brandTitleRow}>
+                    <Image
+                        source={require('../../../assets/images/buraco1.png')}
+                        style={styles.headerIcon}
+                        resizeMode="contain"
+                    />
+                    <Text style={styles.headerTitle}>Desvia Aí</Text>
+                </View>
+
+                <TouchableOpacity
+                    onPress={onLogout}
+                    style={styles.logoutButton}
+                    activeOpacity={0.7}
+                >
+                    <Text style={styles.logoutText}>Sair</Text>
+                </TouchableOpacity>
             </View>
 
             {/* Lista de Registros */}
@@ -95,26 +105,25 @@ export default function FeedScreen({ posts, onNewPost, onLogout, onSelectPost }:
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: Colors.background, // #0F172A
+        backgroundColor: Colors.background,
     },
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
         paddingHorizontal: 18,
-        paddingBottom: 16,
+        paddingBottom: 14,
         borderBottomWidth: 1,
         borderBottomColor: Colors.surface,
     },
     brandTitleRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: 20,
     },
-    brandIcon: {
-        fontSize: 22,
-        marginRight: 8,
-        marginLeft: 30,
+    headerIcon: {
+        width: 30,
+        height: 30,
+        marginRight: 10,
     },
     headerTitle: {
         fontSize: 24,
@@ -123,12 +132,14 @@ const styles = StyleSheet.create({
         letterSpacing: -0.5,
     },
     logoutButton: {
-        paddingVertical: 6,
-        paddingHorizontal: 12,
-        borderRadius: 8,
+        paddingVertical: 7,
+        paddingHorizontal: 14,
+        borderRadius: 10,
         backgroundColor: 'rgba(239, 68, 68, 0.15)',
-        borderWidth: 1,
-        borderColor: 'rgba(239, 68, 68, 0.3)',
+        borderWidth: 1.5,
+        borderColor: 'rgba(239, 68, 68, 0.35)',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     logoutText: {
         color: Colors.danger,
@@ -136,17 +147,17 @@ const styles = StyleSheet.create({
         fontSize: 13,
     },
     listContainer: {
-        padding: 20,
-        paddingBottom: 100,
         paddingHorizontal: 18,
+        paddingTop: 16,
+        paddingBottom: 100,
     },
     card: {
-        backgroundColor: Colors.surface, // #1E293B (mesmo contraste refinado)
+        backgroundColor: Colors.surface,
         borderRadius: 16,
         marginBottom: 20,
         overflow: 'hidden',
         borderWidth: 1.5,
-        borderColor: Colors.border, // #475569
+        borderColor: Colors.border,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 6 },
         shadowOpacity: 0.25,
@@ -244,5 +255,4 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 16,
     },
-    
 });
