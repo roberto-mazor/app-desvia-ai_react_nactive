@@ -18,28 +18,33 @@ export default function PostDetailScreen({ post, onBack }: PostDetailScreenProps
             contentContainerStyle={[
                 styles.container,
                 {
-                    paddingTop: Math.max(insets.top, 20),
+                    paddingTop: Math.max(insets.top + 10, 20),
                     paddingBottom: Math.max(insets.bottom + 30, 40),
                 },
             ]}
+            showsVerticalScrollIndicator={false}
         >
-            <TouchableOpacity onPress={onBack} style={styles.backButton}>
+            {/* Botão de Voltar */}
+            <TouchableOpacity onPress={onBack} style={styles.backButton} activeOpacity={0.7}>
                 <Text style={styles.backText}>← Voltar para o Feed</Text>
             </TouchableOpacity>
 
+            {/* Imagem em Destaque */}
             <Image source={{ uri: post.photo }} style={styles.image} />
 
+            {/* Metadados: Autor e Data */}
             <View style={styles.infoCard}>
-                <Text style={styles.author}>Publicado por: {post.author}</Text>
-                <Text style={styles.date}>Data: {post.date}</Text>
+                <Text style={styles.author}>Publicado por: <Text style={styles.metaHighlight}>{post.author}</Text></Text>
+                <Text style={styles.date}>Data: <Text style={styles.metaHighlight}>{post.date}</Text></Text>
             </View>
 
+            {/* Seção Localização */}
             <View style={styles.section}>
                 <Text style={styles.sectionTitle}>📍 Localização</Text>
                 <Text style={styles.sectionContent}>{post.location}</Text>
             </View>
 
-            {/* Exibe o mapa caso o post possua coordenadas salvas */}
+            {/* Mapa Interativo */}
             {post.coords && (
                 <View style={styles.mapContainer}>
                     <MapView
@@ -51,11 +56,12 @@ export default function PostDetailScreen({ post, onBack }: PostDetailScreenProps
                             longitudeDelta: 0.005,
                         }}
                     >
-                        <Marker coordinate={post.coords} title="Local do Buraco" />
+                        <Marker coordinate={post.coords} title="Local do Buraco" description={post.location} />
                     </MapView>
                 </View>
             )}
 
+            {/* Seção Detalhes */}
             <View style={styles.section}>
                 <Text style={styles.sectionTitle}>📝 Detalhes do Registro</Text>
                 <Text style={styles.sectionContent}>{post.details}</Text>
@@ -71,59 +77,76 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
     },
     backButton: {
-        marginBottom: 15,
+        marginBottom: 16,
         paddingVertical: 8,
+        alignSelf: 'flex-start',
     },
     backText: {
-        color: '#4DA6FF',
+        color: Colors.secondary,
         fontSize: 16,
-        fontWeight: 'bold',
+        fontWeight: '700',
     },
     image: {
         width: '100%',
-        height: 240,
-        borderRadius: 12,
-        marginBottom: 15,
+        height: 230,
+        borderRadius: 16,
+        marginBottom: 16,
+        borderWidth: 1.5,
+        borderColor: Colors.border,
     },
     infoCard: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        paddingVertical: 10,
+        paddingVertical: 12,
+        paddingHorizontal: 4,
         borderBottomWidth: 1,
-        borderBottomColor: '#333',
-        marginBottom: 15,
+        borderBottomColor: Colors.surface,
+        marginBottom: 16,
     },
     author: {
-        color: '#AAAAAA',
+        color: Colors.textSecondary,
         fontSize: 13,
     },
     date: {
-        color: '#AAAAAA',
+        color: Colors.textSecondary,
         fontSize: 13,
     },
+    metaHighlight: {
+        color: Colors.textPrimary,
+        fontWeight: '600',
+    },
     section: {
-        backgroundColor: '#2A2A2A',
-        padding: 15,
-        borderRadius: 8,
-        marginBottom: 15,
+        backgroundColor: Colors.surface,
+        borderWidth: 1.5,
+        borderColor: Colors.border,
+        padding: 16,
+        borderRadius: 16,
+        marginBottom: 16,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 6,
+        elevation: 3,
     },
     sectionTitle: {
-        color: '#FFFFFF',
-        fontSize: 15,
-        fontWeight: 'bold',
-        marginBottom: 6,
+        color: Colors.textPrimary,
+        fontSize: 16,
+        fontWeight: '700',
+        marginBottom: 8,
     },
     sectionContent: {
-        color: '#DDDDDD',
-        fontSize: 14,
-        lineHeight: 20,
+        color: Colors.textSecondary,
+        fontSize: 15,
+        lineHeight: 22,
     },
     mapContainer: {
         width: '100%',
-        height: 180,
-        borderRadius: 8,
+        height: 190,
+        borderRadius: 16,
         overflow: 'hidden',
-        marginBottom: 15,
+        marginBottom: 16,
+        borderWidth: 1.5,
+        borderColor: Colors.border,
     },
     map: {
         width: '100%',
